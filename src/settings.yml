@@ -1,0 +1,35 @@
+# Copyright (c) 2021 Yuriy Lisovskiy
+
+debug: true
+
+allowed_hosts:
+  - 127.0.0.1
+  - ::1
+
+modules:
+  - oauth2::ModuleConfig
+
+middleware:
+  - xw::middleware::Security
+  - xw::middleware::Common
+  - xw::middleware::XFrameOptions
+
+databases:
+  - name: default
+    dbms: sqlite3
+    file: db.sqlite3
+    connections: 10
+
+logger:
+  use_colors: true
+  out:
+    console: true
+  levels:
+    debug: false
+
+ignorable_404_urls:
+  - /favicon.ico
+
+limits:
+  data_upload_max_memory_size: 20971520
+  file_upload_max_memory_size: 104857600
