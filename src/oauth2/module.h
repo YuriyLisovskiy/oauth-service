@@ -14,7 +14,7 @@ namespace oauth2
 class ModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	inline explicit ModuleConfig(xw::conf::Settings* settings) : xw::conf::ModuleConfig(settings)
+	explicit inline ModuleConfig(xw::conf::Settings* settings) : xw::conf::ModuleConfig(settings)
 	{
 	}
 

@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <xalwart.orm/sqlite3/backend.h>
-
+// Xalwart framework
 #include <xalwart/conf/settings.h>
 #include <xalwart/conf/loaders/yaml_loader.h>
 
