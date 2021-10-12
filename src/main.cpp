@@ -15,16 +15,17 @@
 int main(int argc, char** argv)
 {
 	xw::conf::initialize_signal_handlers();
-	auto settings = service::Settings::load();
+	std::unique_ptr<service::Settings> settings;
 	try
 	{
+		settings = service::Settings::load();
 		xw::conf::Application(settings.get())
 			.configure()
 			.execute(argc, argv);
 	}
-	catch (const xw::BaseException& exc)
+	catch (const xw::ImproperlyConfigured& exc)
 	{
-		if (settings->LOGGER)
+		if (settings && settings->LOGGER)
 		{
 			settings->LOGGER->error(exc);
 		}

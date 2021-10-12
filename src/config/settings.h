@@ -15,7 +15,7 @@ namespace service
 class Settings final : public xw::conf::Settings
 {
 public:
-	inline Settings() : xw::conf::Settings(xw::path::cwd())
+	inline Settings() : xw::conf::Settings()
 	{
 	}
 

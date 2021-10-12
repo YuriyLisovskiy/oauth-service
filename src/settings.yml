@@ -18,12 +18,10 @@ databases:
   - name: default
     dbms: sqlite3
     file: db.sqlite3
-    connections: 10
+    connections: 1
 
 logger:
   use_colors: true
-  out:
-    console: true
   levels:
     debug: false
 
