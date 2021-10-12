@@ -8,12 +8,7 @@
 #include "./controllers/hello.h"
 
 
-namespace oauth2
-{
-
 void ModuleConfig::urlpatterns()
 {
-	this->url<HelloController>(R"(oauth2/hello/?)", "oauth2::hello");
-}
-
+	this->url<HelloController>(R"(oauth2/hello/?)", "hello");
 }

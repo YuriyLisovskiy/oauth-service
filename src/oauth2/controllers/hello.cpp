@@ -5,9 +5,6 @@
 #include "./hello.h"
 
 
-namespace oauth2
-{
-
 std::unique_ptr<xw::http::abc::HttpResponse> HelloController::get(xw::http::Request* request) const
 {
 	auto table_names = this->settings->DB->get_table_names();
@@ -20,6 +17,4 @@ std::unique_ptr<xw::http::abc::HttpResponse> HelloController::get(xw::http::Requ
 	return std::make_unique<xw::http::JsonResponse>(nlohmann::json{
 		{"tables", tables}
 	});
-}
-
 }

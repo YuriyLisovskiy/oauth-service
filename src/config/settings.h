@@ -9,9 +9,6 @@
 #include <xalwart/conf/loaders/yaml_loader.h>
 
 
-namespace service
-{
-
 class Settings final : public xw::conf::Settings
 {
 public:
@@ -27,5 +24,3 @@ public:
 
 	static std::unique_ptr<Settings> load();
 };
-
-}

@@ -7,7 +7,7 @@ allowed_hosts:
   - ::1
 
 modules:
-  - oauth2::ModuleConfig
+  - ModuleConfig
 
 middleware:
   - xw::middleware::Security
@@ -18,7 +18,7 @@ databases:
   - name: default
     dbms: sqlite3
     file: db.sqlite3
-    connections: 1
+    connections: 3
 
 logger:
   use_colors: true

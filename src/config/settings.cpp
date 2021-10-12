@@ -13,12 +13,9 @@
 #include "../oauth2/module.h"
 
 
-namespace service
-{
-
 void Settings::register_modules()
 {
-	this->module<oauth2::ModuleConfig>();
+	this->module<ModuleConfig>();
 }
 
 std::unique_ptr<xw::server::abc::IServer> Settings::build_server(const std::function<xw::net::StatusCode(
@@ -58,6 +55,4 @@ std::unique_ptr<Settings> Settings::load()
 			));
 		})
 		.load();
-}
-
 }

@@ -8,9 +8,6 @@
 #include <xalwart/controllers/controller.h>
 
 
-namespace oauth2
-{
-
 class HelloController : public xw::ctrl::Controller<>
 {
 public:
@@ -21,5 +18,3 @@ public:
 
 	std::unique_ptr<xw::http::abc::HttpResponse> get(xw::http::Request* request) const override;
 };
-
-}

@@ -1,2 +1,2 @@
-## oauth2.service
-OAuth 2.0 service.
+## oauth service
+OAuth service.

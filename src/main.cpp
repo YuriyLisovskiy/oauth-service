@@ -15,10 +15,10 @@
 int main(int argc, char** argv)
 {
 	xw::conf::initialize_signal_handlers();
-	std::unique_ptr<service::Settings> settings;
+	std::unique_ptr<Settings> settings;
 	try
 	{
-		settings = service::Settings::load();
+		settings = Settings::load();
 		xw::conf::Application(settings.get())
 			.configure()
 			.execute(argc, argv);

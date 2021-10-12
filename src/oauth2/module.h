@@ -8,9 +8,6 @@
 #include <xalwart/conf/module.h>
 
 
-namespace oauth2
-{
-
 class ModuleConfig : public xw::conf::ModuleConfig
 {
 public:
@@ -20,5 +17,3 @@ public:
 
 	void urlpatterns() override;
 };
-
-}

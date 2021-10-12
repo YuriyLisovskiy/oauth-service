@@ -48,3 +48,5 @@ settings.local.yaml
 # Other
 db.sqlite3
 
+# macOS files
+*.DS_Store
