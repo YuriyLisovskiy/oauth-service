@@ -10,7 +10,7 @@
 #include <xalwart.orm/config/yaml.h>
 
 // oauth2.service
-#include "../oauth2/module.h"
+#include "../oauth/module.h"
 
 
 void Settings::register_modules()

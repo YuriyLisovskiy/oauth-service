@@ -3,43 +3,25 @@ cmake_minimum_required(VERSION 3.12)
 set(CMAKE_CXX_STANDARD 20)
 
 project(oauth2.service)
+
 set(BINARY application)
 
-if (NOT APPLE)
-    set(CMAKE_CXX_FLAGS "-pthread")
-endif()
+set(CMAKE_CXX_FLAGS "-pthread")
 
-set(ROOT_DIR /usr/local)
-set(INCLUDE_DIR ${ROOT_DIR}/include)
-set(LIB_DIR ${ROOT_DIR}/lib)
+set(
+    DEFAULT_INCLUDE_PATHS
+        "/usr/local"
+        "/usr"
+)
 
-include_directories(${INCLUDE_DIR})
-link_directories(${LIB_DIR})
+foreach(ENTRY ${DEFAULT_INCLUDE_PATHS})
+    include_directories(${ENTRY}/include)
+    link_directories(${ENTRY}/lib)
+endforeach()
 
-if (APPLE)
-    set(XW_OPENSSL_DIR "openssl@1.1/1.1.1l" CACHE STRING "OpenSSL version to use for compiling lib.")
-
-    set(XW_OPENSSL_OPT_HOMEBREW_INCLUDE /opt/homebrew/Cellar/${XW_OPENSSL_DIR}/include)
-    if (EXISTS ${XW_OPENSSL_OPT_HOMEBREW_INCLUDE})
-        include_directories(${XW_OPENSSL_OPT_HOMEBREW_INCLUDE})
-    endif()
-
-    set(XW_OPENSSL_OPT_HOMEBREW_LIB /opt/homebrew/Cellar/${XW_OPENSSL_DIR}/lib)
-    if (EXISTS ${XW_OPENSSL_OPT_HOMEBREW_LIB})
-        link_directories(${XW_OPENSSL_OPT_HOMEBREW_LIB})
-    endif()
-
-    set(XW_OPENSSL_USR_LOCAL_INCLUDE /usr/local/Cellar/${XW_OPENSSL_DIR}/include)
-    if (EXISTS ${XW_OPENSSL_USR_LOCAL_INCLUDE})
-        include_directories(${XW_OPENSSL_USR_LOCAL_INCLUDE})
-    endif()
-
-    set(XW_OPENSSL_USR_LOCAL_LIB /usr/local/Cellar/${XW_OPENSSL_DIR}/lib)
-    if (EXISTS ${XW_OPENSSL_USR_LOCAL_LIB})
-        link_directories(${XW_OPENSSL_USR_LOCAL_LIB})
-    endif()
-endif()
-
+# Search for OpenSSL
+find_package(OpenSSL 1.1 REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 # Load and filter project sources.
 file(
@@ -59,25 +41,57 @@ endforeach()
 
 add_executable(${BINARY} ${SOURCES})
 
-# Setup and link framework.
-set(XALWART_FRAMEWORK xalwart)
-
-option(XW_USE_SQLITE3 "Link sqlite3 library and add compile XW_USE_SQLITE3 compile definition." OFF)
-if (${XW_USE_SQLITE3})
-    # Use sqlite3 driver.
-    add_compile_definitions(USE_SQLITE3)
-    target_link_libraries(${BINARY} PUBLIC sqlite3)
-endif()
-
 if (NOT APPLE)
     target_link_libraries(${BINARY} PUBLIC stdc++fs)
 endif()
 
+option(XW_USE_SQLITE3 "Link sqlite3 library and add compile XW_USE_SQLITE3 compile definition." OFF)
+if (${XW_USE_SQLITE3})
+    # Search for sqlite3
+    find_library(
+        SQLITE3 sqlite3 REQUIRED
+        PATHS ${DEFAULT_INCLUDE_PATHS}
+    )
+    target_link_libraries(${BINARY} PUBLIC ${SQLITE3})
+    add_compile_definitions(USE_SQLITE3)
+endif()
+
+# Search for xalwart.base
+find_library(
+    XALWART_BASE xalwart.base REQUIRED
+    PATHS ${DEFAULT_INCLUDE_PATHS}
+)
+
+# Search for xalwart.server
+find_library(
+    XALWART_SERVER xalwart.server REQUIRED
+    PATHS ${DEFAULT_INCLUDE_PATHS}
+)
+
+# Search for xalwart.crypto
+find_library(
+    XALWART_CRYPTO xalwart.crypto REQUIRED
+    PATHS ${DEFAULT_INCLUDE_PATHS}
+)
+
+# Search for xalwart.orm
+find_library(
+    XALWART_ORM xalwart.orm REQUIRED
+    PATHS ${DEFAULT_INCLUDE_PATHS}
+)
+
+# Search for xalwart
+find_library(
+    XALWART_FRAMEWORK xalwart REQUIRED
+    PATHS ${DEFAULT_INCLUDE_PATHS}
+)
+
 target_link_libraries(
     ${BINARY} PUBLIC
-        ${XALWART_FRAMEWORK}.base
-        ${XALWART_FRAMEWORK}.server
-        ${XALWART_FRAMEWORK}.crypto
-        ${XALWART_FRAMEWORK}.orm
+        ${OPENSSL_LIBRARIES}
+        ${XALWART_BASE}
+        ${XALWART_SERVER}
+        ${XALWART_CRYPTO}
+        ${XALWART_ORM}
         ${XALWART_FRAMEWORK}
 )
