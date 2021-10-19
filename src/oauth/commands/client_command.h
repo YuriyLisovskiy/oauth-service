@@ -23,9 +23,9 @@ public:
 		xw::conf::IModuleConfig* config, xw::conf::Settings* settings,
 		std::unique_ptr<ClientService> service
 	) :
-		xw::cmd::Command(config, settings, "client", "Lists, creates and deletes service clients.")
+		xw::cmd::Command(config, settings, "client", "List, create, delete and update service clients.")
 	{
-		this->_service = std::move(service);
+		this->_client_service = std::move(service);
 	}
 
 protected:
@@ -44,11 +44,10 @@ protected:
 private:
 	std::shared_ptr<xw::cmd::flags::BoolFlag> _new_client_flag = nullptr;
 	std::shared_ptr<xw::cmd::flags::BoolFlag> _delete_client_flag = nullptr;
-	std::shared_ptr<xw::cmd::flags::BoolFlag> _edit_client_flag = nullptr;
+	std::shared_ptr<xw::cmd::flags::BoolFlag> _update_client_flag = nullptr;
 	std::shared_ptr<xw::cmd::flags::StringFlag> _client_id_flag = nullptr;
-	std::shared_ptr<xw::cmd::flags::StringFlag> _client_secret_flag = nullptr;
 	std::shared_ptr<xw::cmd::flags::BoolFlag> _use_colors_flag = nullptr;
 	std::shared_ptr<xw::cmd::flags::BoolFlag> _print_help_flag = nullptr;
 
-	std::unique_ptr<ClientService> _service;
+	std::unique_ptr<ClientService> _client_service;
 };

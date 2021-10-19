@@ -19,14 +19,11 @@ void ClientCommand::add_flags()
 	this->_delete_client_flag = this->flag_set->make_bool(
 		"d", "delete", false, "Delete client"
 	);
-	this->_edit_client_flag = this->flag_set->make_bool(
-		"e", "edit", false, "Edit client"
+	this->_update_client_flag = this->flag_set->make_bool(
+		"u", "update", false, "Update client (regenerate secret key)"
 	);
 	this->_client_id_flag = this->flag_set->make_string(
 		"i", "id", "", "Client id (if empty during creation, uuid4 will be generated)"
-	);
-	this->_client_secret_flag = this->flag_set->make_string(
-		"s", "secret", "", "Client secret (if empty during editing, random alphanumeric string will be generated)"
 	);
 	this->_use_colors_flag = this->flag_set->make_bool(
 		"c", "colors", true, "Enables colors for logging in terminal"
@@ -48,15 +45,12 @@ void ClientCommand::handle()
 	this->use_colors_for_logging(this->_use_colors_flag->get());
 	if (this->_new_client_flag->get())
 	{
-		this->settings->LOGGER->info(
-			"Created:\n" + client_as_string(this->_service->create_client(
-				client_id, this->_client_secret_flag->get()
-			))
-		);
+		auto created_client = this->_client_service->create_client(client_id);
+		this->settings->LOGGER->info("Created:\n" + client_as_string(created_client));
 	}
 	else if (this->_delete_client_flag->get())
 	{
-		auto client = this->_service->delete_client(client_id);
+		auto client = this->_client_service->delete_client(client_id);
 		if (!client.is_null())
 		{
 			this->settings->LOGGER->info("Deleted:\n" + client_as_string(client));
@@ -66,10 +60,9 @@ void ClientCommand::handle()
 			this->client_not_found(client_id);
 		}
 	}
-	else if (this->_edit_client_flag->get())
+	else if (this->_update_client_flag->get())
 	{
-		auto client_secret = this->_client_secret_flag->get();
-		auto client = this->_service->edit_client(client_id, client_secret);
+		auto client = this->_client_service->update_secret(client_id);
 		if (!client.is_null())
 		{
 			this->settings->LOGGER->info("Updated:\n" + client_as_string(client));
@@ -81,12 +74,20 @@ void ClientCommand::handle()
 	}
 	else
 	{
-		auto clients = this->_service->get_all_clients();
-		std::string message = "List:\n\n" +
+		auto clients = this->_client_service->get_all_clients();
+		std::string message;
+		if (clients.empty())
+		{
+			message = "No clients.";
+		}
+		else
+		{
+			message = "List:\n\n" +
 			xw::str::join("\n\n", clients.begin(), clients.end(), [](const auto& client) -> std::string
 			{
 				return client_as_string(client);
 			});
+		}
 
 		this->settings->LOGGER->info(message);
 	}

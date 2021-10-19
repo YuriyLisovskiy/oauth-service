@@ -13,8 +13,8 @@ OAuth service.
   # delete client
   ./application client --delete --id=5f3a74e4-d25b-434f-9018-93cf10738099
   
-  # edit client
-  ./application client --edit --id=5f3a74e4-d25b-434f-9018-93cf10738099 --secret=super_256_secret_512
+  # regenerate client's secret key
+  ./application client --update --id=5f3a74e4-d25b-434f-9018-93cf10738099
   ```
 * `migrate` - apply and rollback database migrations:
   ```bash

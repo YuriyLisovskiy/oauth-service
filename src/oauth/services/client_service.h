@@ -46,20 +46,16 @@ public:
 	}
 
 	[[nodiscard]]
-	virtual inline ClientModel create_client(std::string id, std::string secret) const
+	virtual inline ClientModel create_client(std::string id) const
 	{
 		if (id.empty())
 		{
 			id = _generate_uuid4();
 		}
 
-		if (secret.empty())
-		{
-			secret = _generate_random_alphanum_string(64);
-		}
-
 		auto now = xw::dt::Datetime::now(this->settings->TIMEZONE);
-		ClientModel client(id, secret, now, now);
+		auto secret_key = _generate_random_alphanum_string(64);
+		ClientModel client(id, secret_key, now, now);
 		this->repository->wrap([&](auto*)
 		{
 			this->repository->insert<ClientModel>().model(client).commit_one();
@@ -87,17 +83,17 @@ public:
 	}
 
 	[[nodiscard]]
-	virtual inline ClientModel edit_client(const std::string& id, const std::string& secret)
+	virtual inline ClientModel update_secret(const std::string& client_id)
 	{
 		ClientModel client;
 		this->repository->wrap([&](auto*)
 		{
 			client = this->repository->select<ClientModel>()
-			    .where(xw::orm::q::c(&ClientModel::client_id) == id)
+			    .where(xw::orm::q::c(&ClientModel::client_id) == client_id)
 				.first();
-			if (!client.is_null() && client.client_secret != secret)
+			if (!client.is_null())
 			{
-				client.client_secret = secret.empty() ? _generate_random_alphanum_string(64) : secret;
+				client.client_secret = _generate_random_alphanum_string(64);
 				client.updated_at = xw::dt::Datetime::now(this->settings->TIMEZONE);
 				this->repository->update<ClientModel>()
 				    .model(client)
