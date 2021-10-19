@@ -11,7 +11,7 @@
 
 // oauth-service
 #include "../oauth/module.h"
-#include "./migrations/001_initial.h"
+#include "./migrations/001_create_client.h"
 
 
 void Settings::register_modules()
