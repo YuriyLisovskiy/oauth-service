@@ -12,7 +12,7 @@
 
 // oauth-service
 #include "./controllers/hello.h"
-#include "./commands/client_command.h"
+#include "./commands/client/client.h"
 
 
 void ModuleConfig::urlpatterns()

@@ -35,73 +35,16 @@ public:
 	}
 
 	[[nodiscard]]
-	virtual std::list<ClientModel> get_all_clients() const
-	{
-		std::list<ClientModel> clients;
-		this->repository->wrap([&](auto*)
-		{
-			clients = this->repository->select<ClientModel>().all();
-		});
-		return clients;
-	}
+	virtual std::list<ClientModel> get_all_clients() const;
 
 	[[nodiscard]]
-	virtual inline ClientModel create_client(std::string id) const
-	{
-		if (id.empty())
-		{
-			id = _generate_uuid4();
-		}
-
-		auto now = xw::dt::Datetime::now(this->settings->TIMEZONE);
-		auto secret_key = _generate_random_alphanum_string(64);
-		ClientModel client(id, secret_key, now, now);
-		this->repository->wrap([&](auto*)
-		{
-			this->repository->insert<ClientModel>().model(client).commit_one();
-		});
-		return client;
-	}
+	virtual ClientModel create_client(std::string id) const;
 
 	[[nodiscard]]
-	virtual inline ClientModel delete_client(const std::string& id) const
-	{
-		ClientModel client;
-		this->repository->wrap([&](auto*)
-		{
-			client = this->repository->select<ClientModel>()
-			    .where(xw::orm::q::c(&ClientModel::client_id) == id)
-				.first();
-			if (!client.is_null())
-			{
-				this->repository->delete_<ClientModel>()
-				    .where(xw::orm::q::c(&ClientModel::client_id) == id)
-					.commit();
-			}
-		});
-		return client;
-	}
+	virtual ClientModel delete_client(const std::string& id) const;
 
 	[[nodiscard]]
-	virtual inline ClientModel update_secret(const std::string& client_id)
-	{
-		ClientModel client;
-		this->repository->wrap([&](auto*)
-		{
-			client = this->repository->select<ClientModel>()
-			    .where(xw::orm::q::c(&ClientModel::client_id) == client_id)
-				.first();
-			if (!client.is_null())
-			{
-				client.client_secret = _generate_random_alphanum_string(64);
-				client.updated_at = xw::dt::Datetime::now(this->settings->TIMEZONE);
-				this->repository->update<ClientModel>()
-				    .model(client)
-					.commit_one();
-			}
-		});
-		return client;
-	}
+	virtual ClientModel update_secret(const std::string& client_id) const;
 
 protected:
 	const xw::conf::Settings* settings;
