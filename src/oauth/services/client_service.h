@@ -37,8 +37,12 @@ public:
 	[[nodiscard]]
 	virtual std::list<ClientModel> get_all_clients() const
 	{
-		std::list<ClientModel> clients = this->repository->select<ClientModel>().all();
-		this->repository->free_connection();
+		std::list<ClientModel> clients;
+		this->repository->wrap([&](auto*)
+		{
+			throw xw::orm::SQLError("HELLO, WORLD!");
+			clients = this->repository->select<ClientModel>().all();
+		});
 		return clients;
 	}
 
@@ -57,12 +61,10 @@ public:
 
 		auto now = xw::dt::Datetime::now(this->settings->TIMEZONE);
 		ClientModel client(id, secret, now, now);
-		this->repository->transaction([&](auto& transaction)
+		this->repository->wrap([&](auto*)
 		{
-			transaction.template insert<ClientModel>().model(client).commit_one();
-			transaction.commit();
+			this->repository->insert<ClientModel>().model(client).commit_one();
 		});
-
 		return client;
 	}
 
@@ -70,19 +72,17 @@ public:
 	virtual inline ClientModel delete_client(const std::string& id) const
 	{
 		ClientModel client;
-		this->repository->transaction([&](auto& transaction)
+		this->repository->wrap([&](auto*)
 		{
-			client = transaction.template select<ClientModel>()
+			client = this->repository->select<ClientModel>()
 			    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 				.first();
 			if (!client.is_null())
 			{
-				transaction.template delete_<ClientModel>()
+				this->repository->delete_<ClientModel>()
 				    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 					.commit();
 			}
-
-			transaction.commit();
 		});
 		return client;
 	}
@@ -91,21 +91,19 @@ public:
 	virtual inline ClientModel edit_client(const std::string& id, const std::string& secret)
 	{
 		ClientModel client;
-		this->repository->transaction([&](auto& transaction)
+		this->repository->wrap([&](auto*)
 		{
-			client = transaction.template select<ClientModel>()
+			client = this->repository->select<ClientModel>()
 			    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 				.first();
 			if (!client.is_null() && client.client_secret != secret)
 			{
 				client.client_secret = secret.empty() ? _generate_random_alphanum_string(64) : secret;
 				client.updated_at = xw::dt::Datetime::now(this->settings->TIMEZONE);
-				transaction.template update<ClientModel>()
+				this->repository->update<ClientModel>()
 				    .model(client)
 					.commit_one();
 			}
-
-			transaction.commit();
 		});
 		return client;
 	}
