@@ -40,7 +40,6 @@ public:
 		std::list<ClientModel> clients;
 		this->repository->wrap([&](auto*)
 		{
-			throw xw::orm::SQLError("HELLO, WORLD!");
 			clients = this->repository->select<ClientModel>().all();
 		});
 		return clients;
