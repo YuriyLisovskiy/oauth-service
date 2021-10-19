@@ -42,19 +42,13 @@ public:
 	{
 	}
 
-	inline void __set_attr__(const char* attr_name, const void* data) override
+	inline void __orm_set_column__(const std::string& column_name, const char* data) override
 	{
-		this->set_attribute_to(ClientModel::meta_columns, attr_name, data);
+		this->__orm_set_column_data__(ClientModel::meta_columns, column_name, data);
 	}
 
 	[[nodiscard]]
-	inline std::shared_ptr<const xw::obj::Object> __get_attr__(const char* attr_name) const override
-	{
-		return this->get_attribute_from(ClientModel::meta_columns, attr_name);
-	}
-
-	[[nodiscard]]
-	inline std::string __str__() const override
+	inline std::string to_string() const override
 	{
 		if (this->is_null())
 		{

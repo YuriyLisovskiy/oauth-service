@@ -36,7 +36,7 @@ protected:
 	[[nodiscard]]
 	static std::string client_as_string(const ClientModel& client)
 	{
-		return client.__str__();
+		return client.to_string();
 	}
 
 	void client_not_found(const std::string& client_id);
