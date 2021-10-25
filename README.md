@@ -5,7 +5,7 @@ OAuth service.
 * `client` - manage OAuth clients:
   ```bash
   # list clients
-  ./application client --list
+  ./application client list
   
   # create client
   ./application client new --id=5f3a74e4-d25b-434f-9018-93cf10738099
@@ -15,6 +15,9 @@ OAuth service.
   
   # regenerate client's secret key
   ./application client update --id=5f3a74e4-d25b-434f-9018-93cf10738099
+  
+  # get client subcommand usage info
+  ./application client [subcommand] --help
   ```
 * `migrate` - apply and rollback database migrations:
   ```bash

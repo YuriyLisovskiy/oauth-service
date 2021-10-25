@@ -13,6 +13,7 @@
 // oauth-service
 #include "./controllers/hello.h"
 #include "./commands/client.h"
+#include "./services/client_service.h"
 
 
 void ModuleConfig::urlpatterns()
@@ -23,8 +24,9 @@ void ModuleConfig::urlpatterns()
 void ModuleConfig::commands()
 {
 	this->command<ClientCommand>(
-		this, this->settings, std::make_unique<ClientService>(
-			this->settings, std::make_shared<xw::orm::Repository>(this->settings->DB.get())
+		this->settings->LOGGER,
+		std::make_shared<ClientService>(
+			std::make_shared<xw::orm::Repository>(this->settings->DB.get()), this->settings->TIMEZONE
 		)
 	);
 }

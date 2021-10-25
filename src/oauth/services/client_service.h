@@ -10,43 +10,41 @@
 #include <list>
 
 // xalwart
+#include <xalwart.base/datetime.h>
 #include <xalwart.orm/repository.h>
-#include <xalwart/conf/settings.h>
 
 // oauth-service
-#include "../models/client.h"
+#include "./abc.h"
 
 
 extern std::string _generate_random_alphanum_string(size_t length);
 
 extern std::string _generate_uuid4();
 
-class ClientService
+class ClientService final : public IClientService
 {
 public:
 	explicit ClientService(
-		const xw::conf::Settings* settings,
-		std::shared_ptr<xw::orm::Repository> repository
+		std::shared_ptr<xw::orm::Repository> repository, std::shared_ptr<xw::dt::Timezone> tz
 	) :
-		settings(settings), repository(std::move(repository))
+		_timezone(std::move(tz)), _repository(std::move(repository))
 	{
-		xw::require_non_null(this->settings, "settings is nullptr", _ERROR_DETAILS_);
-		xw::require_non_null(this->repository.get(), "repository is nullptr", _ERROR_DETAILS_);
+		xw::require_non_null(this->_repository.get(), "repository is nullptr", _ERROR_DETAILS_);
 	}
 
 	[[nodiscard]]
-	virtual std::list<ClientModel> get_all_clients() const;
+	std::list<ClientModel> get_all_clients() const override;
 
 	[[nodiscard]]
-	virtual ClientModel create_client(std::string id) const;
+	ClientModel create_client(std::string id) const override;
 
 	[[nodiscard]]
-	virtual ClientModel delete_client(const std::string& id) const;
+	ClientModel delete_client(const std::string& id) const override;
 
 	[[nodiscard]]
-	virtual ClientModel update_secret(const std::string& client_id) const;
+	ClientModel update_secret(const std::string& client_id) const override;
 
-protected:
-	const xw::conf::Settings* settings;
-	std::shared_ptr<xw::orm::Repository> repository;
+private:
+	std::shared_ptr<xw::orm::Repository> _repository;
+	std::shared_ptr<xw::dt::Timezone> _timezone;
 };

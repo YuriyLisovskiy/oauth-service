@@ -46,7 +46,7 @@ void ClientSubcommand::log_client_not_found(const std::string& client_id)
 		message = "Client with id '" + client_id + "' is not found.";
 	}
 
-	this->settings->LOGGER->error(message);
+	this->logger->error(message);
 }
 
 bool NewClientCommand::handle()
@@ -58,7 +58,7 @@ bool NewClientCommand::handle()
 
 	auto client_id = this->client_id_flag->get();
 	auto created_client = this->client_service->create_client(client_id);
-	this->settings->LOGGER->info("Created:\n" + created_client.to_string());
+	this->logger->info("Created:\n" + created_client.to_string());
 	return true;
 }
 
@@ -84,7 +84,7 @@ bool ListClientsCommand::handle()
 			});
 	}
 
-	this->settings->LOGGER->info(message);
+	this->logger->info(message);
 	return true;
 }
 
@@ -99,7 +99,7 @@ bool UpdateClientCommand::handle()
 	auto client = this->client_service->update_secret(client_id);
 	if (!client.is_null())
 	{
-		this->settings->LOGGER->info("Updated:\n" + client.to_string());
+		this->logger->info("Updated:\n" + client.to_string());
 	}
 	else
 	{
@@ -120,7 +120,7 @@ bool DeleteClientCommand::handle()
 	auto client = this->client_service->delete_client(client_id);
 	if (!client.is_null())
 	{
-		this->settings->LOGGER->info("Deleted:\n" + client.to_string());
+		this->logger->info("Deleted:\n" + client.to_string());
 	}
 	else
 	{

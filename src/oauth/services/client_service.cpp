@@ -69,9 +69,9 @@ std::string _generate_uuid4()
 std::list<ClientModel> ClientService::get_all_clients() const
 {
 	std::list<ClientModel> clients;
-	this->repository->wrap([&](auto*)
+	this->_repository->wrap([&](auto*)
 	{
-		clients = this->repository->select<ClientModel>().all();
+		clients = this->_repository->select<ClientModel>().all();
 	});
 	return clients;
 }
@@ -83,12 +83,12 @@ ClientModel ClientService::create_client(std::string id) const
 		id = _generate_uuid4();
 	}
 
-	auto now = xw::dt::Datetime::now(this->settings->TIMEZONE);
+	auto now = xw::dt::Datetime::now(this->_timezone);
 	auto secret_key = _generate_random_alphanum_string(64);
 	ClientModel client(id, secret_key, now, now);
-	this->repository->wrap([&](auto*)
+	this->_repository->wrap([&](auto*)
 	{
-		this->repository->insert<ClientModel>().model(client).commit_one();
+		this->_repository->insert<ClientModel>().model(client).commit_one();
 	});
 	return client;
 }
@@ -96,14 +96,14 @@ ClientModel ClientService::create_client(std::string id) const
 ClientModel ClientService::delete_client(const std::string& id) const
 {
 	ClientModel client;
-	this->repository->wrap([&](auto*)
+	this->_repository->wrap([&](auto*)
 	{
-		client = this->repository->select<ClientModel>()
+		client = this->_repository->select<ClientModel>()
 		    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 			.first();
 		if (!client.is_null())
 		{
-			this->repository->delete_<ClientModel>()
+			this->_repository->delete_<ClientModel>()
 			    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 				.commit();
 		}
@@ -114,16 +114,16 @@ ClientModel ClientService::delete_client(const std::string& id) const
 ClientModel ClientService::update_secret(const std::string& client_id) const
 {
 	ClientModel client;
-	this->repository->wrap([&](auto*)
+	this->_repository->wrap([&](auto*)
 	{
-		client = this->repository->select<ClientModel>()
+		client = this->_repository->select<ClientModel>()
 		    .where(xw::orm::q::c(&ClientModel::client_id) == client_id)
 			.first();
 		if (!client.is_null())
 		{
 			client.client_secret = _generate_random_alphanum_string(64);
-			client.updated_at = xw::dt::Datetime::now(this->settings->TIMEZONE);
-			this->repository->update<ClientModel>()
+			client.updated_at = xw::dt::Datetime::now(this->_timezone);
+			this->_repository->update<ClientModel>()
 			    .model(client)
 				.commit_one();
 		}
