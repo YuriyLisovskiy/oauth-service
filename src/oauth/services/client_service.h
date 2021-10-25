@@ -14,7 +14,7 @@
 #include <xalwart.orm/repository.h>
 
 // oauth-service
-#include "./abc.h"
+#include "./interfaces.h"
 
 
 extern std::string _generate_random_alphanum_string(size_t length);
@@ -33,16 +33,16 @@ public:
 	}
 
 	[[nodiscard]]
-	std::list<ClientModel> get_all_clients() const override;
+	std::list<ClientModel> list() const override;
 
 	[[nodiscard]]
-	ClientModel create_client(std::string id) const override;
+	ClientModel create(std::string id) const override;
 
 	[[nodiscard]]
-	ClientModel delete_client(const std::string& id) const override;
+	ClientModel remove(const std::string& id) const override;
 
 	[[nodiscard]]
-	ClientModel update_secret(const std::string& client_id) const override;
+	ClientModel update(const std::string& client_id) const override;
 
 private:
 	std::shared_ptr<xw::orm::Repository> _repository;

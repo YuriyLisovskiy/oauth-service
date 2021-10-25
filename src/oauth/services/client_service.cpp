@@ -66,7 +66,7 @@ std::string _generate_uuid4()
 	return ss.str();
 }
 
-std::list<ClientModel> ClientService::get_all_clients() const
+std::list<ClientModel> ClientService::list() const
 {
 	std::list<ClientModel> clients;
 	this->_repository->wrap([&](auto*)
@@ -76,7 +76,7 @@ std::list<ClientModel> ClientService::get_all_clients() const
 	return clients;
 }
 
-ClientModel ClientService::create_client(std::string id) const
+ClientModel ClientService::create(std::string id) const
 {
 	if (id.empty())
 	{
@@ -93,7 +93,7 @@ ClientModel ClientService::create_client(std::string id) const
 	return client;
 }
 
-ClientModel ClientService::delete_client(const std::string& id) const
+ClientModel ClientService::remove(const std::string& id) const
 {
 	ClientModel client;
 	this->_repository->wrap([&](auto*)
@@ -111,7 +111,7 @@ ClientModel ClientService::delete_client(const std::string& id) const
 	return client;
 }
 
-ClientModel ClientService::update_secret(const std::string& client_id) const
+ClientModel ClientService::update(const std::string& client_id) const
 {
 	ClientModel client;
 	this->_repository->wrap([&](auto*)

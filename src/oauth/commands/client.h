@@ -14,7 +14,7 @@
 #include <xalwart/commands/flags/default.h>
 
 // oauth-service
-#include "../services/abc.h"
+#include "../services/interfaces.h"
 
 
 class ClientSubcommand : public xw::cmd::Command

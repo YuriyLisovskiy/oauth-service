@@ -57,7 +57,7 @@ bool NewClientCommand::handle()
 	}
 
 	auto client_id = this->client_id_flag->get();
-	auto created_client = this->client_service->create_client(client_id);
+	auto created_client = this->client_service->create(client_id);
 	this->logger->info("Created:\n" + created_client.to_string());
 	return true;
 }
@@ -69,7 +69,7 @@ bool ListClientsCommand::handle()
 		return true;
 	}
 
-	auto clients = this->client_service->get_all_clients();
+	auto clients = this->client_service->list();
 	std::string message;
 	if (clients.empty())
 	{
@@ -96,7 +96,7 @@ bool UpdateClientCommand::handle()
 	}
 
 	auto client_id = this->client_id_flag->get();
-	auto client = this->client_service->update_secret(client_id);
+	auto client = this->client_service->update(client_id);
 	if (!client.is_null())
 	{
 		this->logger->info("Updated:\n" + client.to_string());
@@ -117,7 +117,7 @@ bool DeleteClientCommand::handle()
 	}
 
 	auto client_id = this->client_id_flag->get();
-	auto client = this->client_service->delete_client(client_id);
+	auto client = this->client_service->remove(client_id);
 	if (!client.is_null())
 	{
 		this->logger->info("Deleted:\n" + client.to_string());
