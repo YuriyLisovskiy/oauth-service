@@ -12,6 +12,7 @@
 // oauth-service
 #include "../oauth/module.h"
 #include "./migrations/001_create_client.h"
+#include "./migrations/002_create_user.h"
 
 
 void Settings::register_modules()
@@ -22,6 +23,7 @@ void Settings::register_modules()
 void Settings::register_migrations()
 {
 	this->migration<Migration001_CreateClient>();
+	this->migration<Migration002_CreateUser>();
 }
 
 std::unique_ptr<xw::server::IServer> Settings::build_server(const std::function<xw::net::StatusCode(
