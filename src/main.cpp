@@ -5,10 +5,10 @@
 // STL
 #include <iostream>
 
-// Xalwart framework
+// xalwart
 #include <xalwart/conf/application.h>
 
-// oauth2.service
+// oauth-service
 #include "./config/settings.h"
 
 

@@ -22,8 +22,7 @@ databases:
 
 logger:
   use_colors: true
-  levels:
-    debug: false
+  levels: '*'
 
 ignorable_404_urls:
   - /favicon.ico

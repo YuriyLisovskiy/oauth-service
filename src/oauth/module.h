@@ -4,7 +4,7 @@
 
 #pragma once
 
-// Xalwart framework.
+// xalwart
 #include <xalwart/conf/module.h>
 
 
@@ -16,4 +16,6 @@ public:
 	}
 
 	void urlpatterns() override;
+
+	void commands() override;
 };

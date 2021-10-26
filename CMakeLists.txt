@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_CXX_STANDARD 20)
 
-project(oauth2.service)
+project(oauth-service)
 
 set(BINARY application)
 
@@ -56,42 +56,23 @@ if (${XW_USE_SQLITE3})
     add_compile_definitions(USE_SQLITE3)
 endif()
 
-# Search for xalwart.base
-find_library(
-    XALWART_BASE xalwart.base REQUIRED
-    PATHS ${DEFAULT_INCLUDE_PATHS}
-)
+set(XALWART_LIBRARIES)
+function(FIND_XALWART_LIBRARY PART)
+    find_library(
+        XALWART_${PART} xalwart${PART} REQUIRED
+        PATHS ${DEFAULT_INCLUDE_PATHS}
+    )
+    set(XALWART_LIBRARIES ${XALWART_LIBRARIES} ${XALWART_${PART}} PARENT_SCOPE)
+endfunction(FIND_XALWART_LIBRARY)
 
-# Search for xalwart.server
-find_library(
-    XALWART_SERVER xalwart.server REQUIRED
-    PATHS ${DEFAULT_INCLUDE_PATHS}
-)
-
-# Search for xalwart.crypto
-find_library(
-    XALWART_CRYPTO xalwart.crypto REQUIRED
-    PATHS ${DEFAULT_INCLUDE_PATHS}
-)
-
-# Search for xalwart.orm
-find_library(
-    XALWART_ORM xalwart.orm REQUIRED
-    PATHS ${DEFAULT_INCLUDE_PATHS}
-)
-
-# Search for xalwart
-find_library(
-    XALWART_FRAMEWORK xalwart REQUIRED
-    PATHS ${DEFAULT_INCLUDE_PATHS}
-)
+find_xalwart_library(.base)
+find_xalwart_library(.server)
+find_xalwart_library(.crypto)
+find_xalwart_library(.orm)
+find_xalwart_library("")
 
 target_link_libraries(
     ${BINARY} PUBLIC
         ${OPENSSL_LIBRARIES}
-        ${XALWART_BASE}
-        ${XALWART_SERVER}
-        ${XALWART_CRYPTO}
-        ${XALWART_ORM}
-        ${XALWART_FRAMEWORK}
+        ${XALWART_LIBRARIES}
 )

@@ -4,13 +4,14 @@
 
 #include "./settings.h"
 
-// Xalwart framework
+// xalwart
 #include <xalwart.base/workers/threaded_worker.h>
 #include <xalwart.server/http_server.h>
 #include <xalwart.orm/config/yaml.h>
 
-// oauth2.service
+// oauth-service
 #include "../oauth/module.h"
+#include "./migrations/001_create_client.h"
 
 
 void Settings::register_modules()
@@ -18,7 +19,12 @@ void Settings::register_modules()
 	this->module<ModuleConfig>();
 }
 
-std::unique_ptr<xw::server::abc::IServer> Settings::build_server(const std::function<xw::net::StatusCode(
+void Settings::register_migrations()
+{
+	this->migration<Migration001_CreateClient>();
+}
+
+std::unique_ptr<xw::server::IServer> Settings::build_server(const std::function<xw::net::StatusCode(
 	xw::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
 )>& handler, const xw::Options& options)
 {
