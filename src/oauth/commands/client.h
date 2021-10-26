@@ -9,7 +9,7 @@
 #include <string>
 
 // xalwart
-#include <xalwart.base/abc/base.h>
+#include <xalwart.base/interfaces/base.h>
 #include <xalwart/commands/command.h>
 #include <xalwart/commands/flags/default.h>
 
@@ -22,7 +22,7 @@ class ClientSubcommand : public xw::cmd::Command
 public:
 	inline explicit ClientSubcommand(
 		const std::string& cmd_name, const std::string& help,
-		const std::shared_ptr<xw::abc::ILogger>& logger,
+		const std::shared_ptr<xw::ILogger>& logger,
 		std::string extra_client_id_usage, std::shared_ptr<IClientService> client_service
 	) : xw::cmd::Command(cmd_name, help, logger)
 	{
@@ -49,7 +49,7 @@ class NewClientCommand final : public ClientSubcommand
 {
 public:
 	inline explicit NewClientCommand(
-		const std::shared_ptr<xw::abc::ILogger>& logger,
+		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) :
 		ClientSubcommand(
@@ -67,7 +67,7 @@ class ListClientsCommand final : public ClientSubcommand
 {
 public:
 	inline explicit ListClientsCommand(
-		const std::shared_ptr<xw::abc::ILogger>& logger,
+		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) :
 		ClientSubcommand(
@@ -84,7 +84,7 @@ class UpdateClientCommand final : public ClientSubcommand
 {
 public:
 	inline explicit UpdateClientCommand(
-		const std::shared_ptr<xw::abc::ILogger>& logger,
+		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) :
 		ClientSubcommand(
@@ -102,7 +102,7 @@ class DeleteClientCommand final : public ClientSubcommand
 {
 public:
 	inline explicit DeleteClientCommand(
-		const std::shared_ptr<xw::abc::ILogger>& logger,
+		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) :
 		ClientSubcommand(
@@ -119,7 +119,7 @@ class ClientCommand final : public xw::cmd::Command
 {
 public:
 	explicit inline ClientCommand(
-		const std::shared_ptr<xw::abc::ILogger>& logger,
+		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) : xw::cmd::Command("client", "Lists, creates, deletes and updates service clients", logger)
 	{

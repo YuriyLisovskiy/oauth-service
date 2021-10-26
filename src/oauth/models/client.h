@@ -9,11 +9,11 @@
 
 // xalwart
 #include <xalwart.base/datetime.h>
-#include <xalwart.base/abc/base.h>
+#include <xalwart.base/interfaces/base.h>
 #include <xalwart.orm/db/model.h>
 
 
-class ClientModel : public xw::orm::db::Model, public xw::abc::IJsonSerializable
+class ClientModel : public xw::orm::db::Model, public xw::IJsonSerializable
 {
 public:
 	std::string client_id;

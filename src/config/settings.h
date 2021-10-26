@@ -20,7 +20,7 @@ public:
 
 	void register_migrations() override;
 
-	std::unique_ptr<xw::server::abc::IServer> build_server(const std::function<xw::net::StatusCode(
+	std::unique_ptr<xw::server::IServer> build_server(const std::function<xw::net::StatusCode(
 		xw::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
 	)>& handler, const xw::Options& options) override;
 

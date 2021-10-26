@@ -16,5 +16,5 @@ public:
 	{
 	}
 
-	std::unique_ptr<xw::http::abc::HttpResponse> get(xw::http::Request* request) const override;
+	std::unique_ptr<xw::http::HttpResponse> get(xw::http::Request* request) const override;
 };

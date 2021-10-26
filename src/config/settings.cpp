@@ -24,7 +24,7 @@ void Settings::register_migrations()
 	this->migration<Migration001_CreateClient>();
 }
 
-std::unique_ptr<xw::server::abc::IServer> Settings::build_server(const std::function<xw::net::StatusCode(
+std::unique_ptr<xw::server::IServer> Settings::build_server(const std::function<xw::net::StatusCode(
 	xw::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
 )>& handler, const xw::Options& options)
 {
