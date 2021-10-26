@@ -76,3 +76,8 @@ target_link_libraries(
         ${OPENSSL_LIBRARIES}
         ${XALWART_LIBRARIES}
 )
+
+option(CONFIGURE_TESTS "Configure tests." OFF)
+if (${CONFIGURE_TESTS})
+    add_subdirectory(tests)
+endif()
