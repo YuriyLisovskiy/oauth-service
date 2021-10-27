@@ -18,7 +18,6 @@ class UserModel : public xw::orm::db::Model, public xw::IJsonSerializable
 {
 private:
 	std::string _password_hash;
-	static const inline xw::crypto::Digest HASH_FUNCTION = xw::crypto::sha256;
 
 public:
 	long long int id{};
@@ -77,12 +76,18 @@ public:
 
 	inline void set_password(const std::string& raw_password)
 	{
-		this->_password_hash = HASH_FUNCTION(raw_password);
+		this->_password_hash = calculate_hash(raw_password);
 	}
 
 	[[nodiscard]]
 	inline bool check_password(const std::string& raw_password) const
 	{
-		return this->_password_hash == HASH_FUNCTION(raw_password);
+		return this->_password_hash == calculate_hash(raw_password);
+	}
+
+protected:
+	static inline std::string calculate_hash(const std::string& data)
+	{
+		return xw::crypto::sha256(data);
 	}
 };

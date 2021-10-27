@@ -13,15 +13,16 @@
 #include "./controllers/users_controller.h"
 
 
-UsersModuleConfig::UsersModuleConfig(xw::conf::Settings* settings) : xw::conf::ModuleConfig(settings)
+void UsersModuleConfig::configure()
 {
 	this->_user_service = std::make_shared<UserService>(
 		std::make_shared<xw::orm::Repository>(this->settings->DB.get()), this->settings->TIMEZONE
 	);
+	this->set_ready();
 }
 
 void UsersModuleConfig::urlpatterns()
 {
-	this->url<UsersController>(R"(users/?)", "users", this->_user_service);
-	this->url<UserController, long long int>(R"(users/<id>([0-9]+)/?)", "user", this->_user_service);
+	this->url<UsersController>(R"(?)", "users", this->_user_service);
+	this->url<UserController, long long int>(R"(<id>([0-9]+)/?)", "user", this->_user_service);
 }

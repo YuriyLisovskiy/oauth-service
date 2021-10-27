@@ -4,6 +4,9 @@
 
 #include "./users_controller.h"
 
+// oauth-service
+#include "../serializers/user_serializers.h"
+
 
 std::unique_ptr<xw::http::HttpResponse> UsersController::get(xw::http::Request* request) const
 {
@@ -19,6 +22,15 @@ std::unique_ptr<xw::http::HttpResponse> UsersController::get(xw::http::Request* 
 
 std::unique_ptr<xw::http::HttpResponse> UsersController::post(xw::http::Request* request) const
 {
-	// TODO:
-	return nullptr;
+	auto data = request->json();
+	if (!data.is_null())
+	{
+		CreateUserSerializer serializer(this->_user_service);
+		auto created_user = serializer.save(data);
+		return std::make_unique<xw::http::JsonResponse>(created_user.to_json(), 201);
+	}
+
+	return std::make_unique<xw::http::JsonResponse>(
+		nlohmann::json(nlohmann::json::value_t::object), 400
+	);
 }

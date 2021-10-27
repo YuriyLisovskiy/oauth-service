@@ -23,7 +23,7 @@ public:
 			[](auto& table)
 			{
 				table.template column<long long int>(
-					"id", {.primary_key=true, .unique=true, .null=false}
+					"id", {.primary_key=true, .autoincrement=true, .unique=true, .null=false}
 				);
 				table.template column<std::string>("email", {.max_len=320, .null=false});
 				table.template column<std::string>("password_hash", {.max_len=64, .null=false});

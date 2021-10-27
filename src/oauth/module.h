@@ -11,7 +11,9 @@
 class ModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	explicit inline ModuleConfig(xw::conf::Settings* settings) : xw::conf::ModuleConfig(settings)
+	explicit inline ModuleConfig(
+		const std::string& registration_name, xw::conf::Settings* settings
+	) : xw::conf::ModuleConfig(registration_name, settings)
 	{
 	}
 

@@ -10,6 +10,7 @@
 #include <xalwart.orm/config/yaml.h>
 
 // oauth-service
+#include "./module.h"
 #include "../oauth/module.h"
 #include "../users/module.h"
 #include "./migrations/001_create_client.h"
@@ -18,6 +19,7 @@
 
 void Settings::register_modules()
 {
+	this->module<RootModuleConfig>();
 	this->module<ModuleConfig>();
 	this->module<UsersModuleConfig>();
 }

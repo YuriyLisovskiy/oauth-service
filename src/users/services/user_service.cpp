@@ -42,7 +42,7 @@ UserModel UserService::update(
 			.first();
 		if (!user.is_null())
 		{
-			user.email = email.value_or("");
+			user.email = email.value_or(user.email);
 			if (raw_password.has_value())
 			{
 				user.set_password(raw_password.value());
