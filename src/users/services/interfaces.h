@@ -20,16 +20,14 @@ public:
 	virtual std::list<UserModel> get_all() const = 0;
 
 	[[nodiscard]]
-	virtual UserModel create(
-		const std::string& id, const std::string& email, const std::string& raw_password
-	) const = 0;
+	virtual UserModel create(const std::string& email, const std::string& raw_password) const = 0;
 
 	[[nodiscard]]
 	virtual UserModel update(
-		const std::string& id,
+		long long int id,
 		const std::optional<std::string>& email, const std::optional<std::string>& raw_password
 	) const = 0;
 
 	[[nodiscard]]
-	virtual UserModel remove(const std::string& id) const = 0;
+	virtual UserModel remove(long long int id) const = 0;
 };

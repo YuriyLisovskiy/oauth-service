@@ -7,13 +7,17 @@
 // xalwart
 #include <xalwart/conf/module.h>
 
+// oauth-service
+#include "./services/interfaces.h"
 
-class ModuleConfig : public xw::conf::ModuleConfig
+
+class UsersModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	explicit inline ModuleConfig(xw::conf::Settings* settings) : xw::conf::ModuleConfig(settings)
-	{
-	}
+	explicit UsersModuleConfig(xw::conf::Settings* settings);
 
 	void urlpatterns() override;
+
+private:
+	std::shared_ptr<IUserService> _user_service = nullptr;
 };

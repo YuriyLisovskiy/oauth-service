@@ -11,6 +11,7 @@
 
 // oauth-service
 #include "../oauth/module.h"
+#include "../users/module.h"
 #include "./migrations/001_create_client.h"
 #include "./migrations/002_create_user.h"
 
@@ -18,6 +19,7 @@
 void Settings::register_modules()
 {
 	this->module<ModuleConfig>();
+	this->module<UsersModuleConfig>();
 }
 
 void Settings::register_migrations()

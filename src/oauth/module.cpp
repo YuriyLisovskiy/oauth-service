@@ -11,15 +11,9 @@
 #include <xalwart.orm/repository.h>
 
 // oauth-service
-#include "./controllers/hello.h"
 #include "./commands/client.h"
 #include "./services/client_service.h"
 
-
-void ModuleConfig::urlpatterns()
-{
-	this->url<HelloController>(R"(oauth2/hello/?)", "hello");
-}
 
 void ModuleConfig::commands()
 {

@@ -18,10 +18,10 @@ class UserModel : public xw::orm::db::Model, public xw::IJsonSerializable
 {
 private:
 	std::string _password_hash;
-	static const inline Digest HASH_FUNCTION = xw::crypto::sha256;
+	static const inline xw::crypto::Digest HASH_FUNCTION = xw::crypto::sha256;
 
 public:
-	size_t id{};
+	long long int id{};
 	std::string email;
 	xw::dt::Datetime created_at;
 	xw::dt::Datetime updated_at;
