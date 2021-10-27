@@ -15,11 +15,11 @@
 #include "../services/user_service.h"
 
 
-class CreateUserSerializer : public CreateModelSerializer<UserModel, std::string, std::string>
+class CreateUserSerializer : public ModelSerializer<UserModel, std::string, std::string>
 {
 public:
 	explicit inline CreateUserSerializer(std::shared_ptr<IUserService> user_service) :
-		CreateModelSerializer(
+		ModelSerializer(
 			{.name="email", .required=true},
 			{.name="raw_password", .required=true}
 		)
@@ -28,7 +28,7 @@ public:
 		xw::require_non_null(this->_user_service.get(), "user service is nullptr", _ERROR_DETAILS_);
 	}
 
-	inline UserModel create(
+	inline UserModel process(
 		std::optional<std::string> email, std::optional<std::string> raw_password
 	) override
 	{
@@ -40,11 +40,11 @@ private:
 };
 
 class UpdateUserSerializer :
-	public UpdateModelSerializer<UserModel, long long int, std::string, std::string>
+	public ModelSerializer<UserModel, long long int, std::string, std::string>
 {
 public:
 	explicit inline UpdateUserSerializer(std::shared_ptr<IUserService> user_service) :
-		UpdateModelSerializer(
+		ModelSerializer(
 			{.name="id", .required=true},
 			{.name="email"},
 			{.name="raw_password"}
@@ -54,7 +54,7 @@ public:
 		xw::require_non_null(this->_user_service.get(), "user service is nullptr", _ERROR_DETAILS_);
 	}
 
-	inline UserModel update(
+	inline UserModel process(
 		std::optional<long long int> id,
 		std::optional<std::string> email, std::optional<std::string> raw_password
 	) override

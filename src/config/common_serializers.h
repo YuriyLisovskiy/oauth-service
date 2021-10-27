@@ -102,59 +102,28 @@ public:
 		return validated_data;
 	}
 
-	[[nodiscard]]
-	virtual ModelType save(nlohmann::json data) = 0;
-
 protected:
 	std::tuple<SerializerField<Args>...> fields;
 };
 
 template <default_initializable ModelType, class ...Args>
-class CreateModelSerializer : public Serializer<ModelType, Args...>
+class ModelSerializer : public Serializer<ModelType, Args...>
 {
 public:
-	explicit inline CreateModelSerializer(SerializerField<Args> ...fields) :
+	explicit inline ModelSerializer(SerializerField<Args>&& ...fields) :
 		Serializer<ModelType, Args...>(std::forward<SerializerField<Args>>(fields)...)
 	{
 	}
 
-	virtual inline ModelType create(std::optional<Args>...)
-	{
-		return {};
-	}
-
 	[[nodiscard]]
-	inline ModelType save(nlohmann::json data) override
+	virtual inline ModelType save(const nlohmann::json& data)
 	{
 		auto validated_data = this->validate(data);
 		return std::apply(
-			[this](std::optional<Args>... a) -> auto { return this->create(a...); },
-			validated_data
+			[this](std::optional<Args>... a) -> auto { return this->process(a...); },
+			std::forward<std::tuple<std::optional<Args>...>>(validated_data)
 		);
 	}
-};
 
-template <default_initializable ModelType, class ...Args>
-class UpdateModelSerializer : public Serializer<ModelType, Args...>
-{
-public:
-	explicit inline UpdateModelSerializer(SerializerField<Args> ...fields) :
-		Serializer<ModelType, Args...>(std::forward<SerializerField<Args>>(fields)...)
-	{
-	}
-
-	virtual inline ModelType update(std::optional<Args>...)
-	{
-		return {};
-	}
-
-	[[nodiscard]]
-	inline ModelType save(nlohmann::json data) override
-	{
-		auto validated_data = this->validate(data);
-		return std::apply(
-			[this](std::optional<Args>... a) -> auto { return this->update(a...); },
-			validated_data
-		);
-	}
+	virtual ModelType process(std::optional<Args>...) = 0;
 };

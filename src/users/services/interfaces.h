@@ -20,6 +20,9 @@ public:
 	virtual std::list<UserModel> get_all() const = 0;
 
 	[[nodiscard]]
+	virtual UserModel get_by_id(long long id) const = 0;
+
+	[[nodiscard]]
 	virtual UserModel create(const std::string& email, const std::string& raw_password) const = 0;
 
 	[[nodiscard]]

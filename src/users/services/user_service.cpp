@@ -15,6 +15,18 @@ std::list<UserModel> UserService::get_all() const
 	return users;
 }
 
+UserModel UserService::get_by_id(long long id) const
+{
+	UserModel user;
+	this->_repository->wrap([&](auto*)
+	{
+		user = this->_repository->select<UserModel>()
+		    .where(xw::orm::q::c(&UserModel::id) == id)
+			.first();
+	});
+	return user;
+}
+
 UserModel UserService::create(
 	const std::string& email, const std::string& raw_password
 ) const
@@ -42,7 +54,11 @@ UserModel UserService::update(
 			.first();
 		if (!user.is_null())
 		{
-			user.email = email.value_or(user.email);
+			if (email.has_value())
+			{
+				user.email = email.value();
+			}
+
 			if (raw_password.has_value())
 			{
 				user.set_password(raw_password.value());
