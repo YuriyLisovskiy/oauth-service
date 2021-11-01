@@ -66,6 +66,11 @@ public:
 	[[nodiscard]]
 	nlohmann::json to_json() const override
 	{
+		if (this->is_null())
+		{
+			return nullptr;
+		}
+
 		return {
 			{"id", this->id},
 			{"email", this->email},

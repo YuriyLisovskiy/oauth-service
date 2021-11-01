@@ -31,6 +31,7 @@ public:
 	[[nodiscard]]
 	std::list<UserModel> get_all() const override;
 
+	[[nodiscard]]
 	UserModel get_by_id(long long id) const override;
 
 	[[nodiscard]]
