@@ -17,18 +17,6 @@ protected:
 	);
 };
 
-
-TEST_F(TestsOAuthModels_ClientModel, to_string)
-{
-	std::string expected_result = "Client:\n  id: " + this->client_id +
-		"\n  secret: " + this->client_secret +
-		"\n  created at: " + this->now.str() +
-		"\n  updated at: " + this->now.str();
-	auto actual_result = ClientModel(this->client_id, this->client_secret, this->now, this->now).to_string();
-
-	ASSERT_EQ(expected_result, actual_result);
-}
-
 TEST_F(TestsOAuthModels_ClientModel, to_json)
 {
 	nlohmann::json expected_result = {
@@ -40,4 +28,11 @@ TEST_F(TestsOAuthModels_ClientModel, to_json)
 	auto actual_result = ClientModel(this->client_id, this->client_secret, this->now, this->now).to_json();
 
 	ASSERT_EQ(expected_result, actual_result);
+}
+
+TEST_F(TestsOAuthModels_ClientModel, to_json_IsNull)
+{
+	ClientModel model;
+	model.mark_as_null();
+	ASSERT_EQ(nullptr, model.to_json());
 }

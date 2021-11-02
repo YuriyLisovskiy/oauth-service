@@ -2,30 +2,79 @@
  * Copyright (c) 2021 Yuriy Lisovskiy
  */
 
+#include <memory>
+#include <filesystem>
+
 #include <gtest/gtest.h>
 
+#include <xalwart.orm/sqlite3/backend.h>
+#include <xalwart.orm/db/migration.h>
+#include <xalwart.orm/db/executor.h>
+
 #include "../../../src/oauth/services/client_service.h"
-#include "./sql_backend_mock.h"
+#include "../../../src/config/migrations/001_create_client.h"
 
 
 class TestsOAuthServices_ClientService : public ::testing::Test
 {
 protected:
-	std::shared_ptr<DatabaseConnectionMock> connection = nullptr;
 	std::shared_ptr<ClientService> client_service = nullptr;
+	std::string db_file = "/tmp/test.db";
 
 	void SetUp() override
 	{
-		this->connection = std::make_shared<DatabaseConnectionMock>();
-		this->_backend.set_connection(this->connection);
+		this->_backend = std::make_shared<xw::orm::sqlite3::Backend>(3, this->db_file.c_str());
+		this->_backend->create_pool();
+		std::list<std::shared_ptr<xw::orm::db::Migration>> migrations = {
+			std::make_shared<Migration001_CreateClient>(this->_backend.get())
+		};
+		auto executor = xw::orm::db::MigrationExecutor(
+			this->_backend.get(), migrations,
+			[](auto msg, auto end) { /* logging */ }
+		);
+		executor.apply(this->_backend->schema_editor());
 		this->client_service = std::make_shared<ClientService>(
-			std::make_shared<xw::orm::Repository>(&this->_backend),
+			std::make_shared<xw::orm::Repository>(this->_backend.get()),
 			std::make_shared<xw::dt::Timezone>(xw::dt::Timezone::UTC)
 		);
 	}
 
+	void TearDown() override
+	{
+		if (std::filesystem::exists(this->db_file))
+		{
+			std::filesystem::remove(this->db_file);
+		}
+	}
+
+	void set_data(const std::vector<ClientModel>& data)
+	{
+		auto connection = this->_backend->get_connection();
+		auto query = xw::orm::q::Insert<ClientModel>(connection.get(), this->_backend->sql_builder());
+		for (auto& model : data)
+		{
+			connection->begin_transaction();
+			query = query.model(model);
+			connection->end_transaction();
+		}
+
+		query.commit_batch();
+		this->_backend->release_connection(connection);
+	}
+
+	std::string set_model(const ClientModel& model)
+	{
+		auto connection = this->_backend->get_connection();
+		auto query = xw::orm::q::Insert<ClientModel>(connection.get(), this->_backend->sql_builder());
+		query = query.model(model);
+		std::string id;
+		query.commit_one(id);
+		this->_backend->release_connection(connection);
+		return id;
+	}
+
 private:
-	SQLBackendMock _backend;
+	std::shared_ptr<xw::orm::sqlite3::Backend> _backend;
 };
 
 ClientModel make_client(const xw::dt::Datetime& dt)
@@ -61,7 +110,7 @@ TEST_F(TestsOAuthServices_ClientService, list)
 	std::vector<ClientModel> expected_result = {
 		make_client(now), make_client(now), make_client(now)
 	};
-	this->connection->set_map_rows_data(create_map_data(expected_result, now_str));
+	this->set_data(expected_result);
 	auto actual_result = this->client_service->list();
 
 	ASSERT_EQ(expected_result.size(), actual_result.size());
@@ -110,10 +159,10 @@ TEST_F(TestsOAuthServices_ClientService, remove)
 	auto now = xw::dt::Datetime::now();
 	auto now_str = now.str();
 	auto model = make_client(now);
-	std::vector<ClientModel> models = {model};
-	this->connection->set_map_rows_data(create_map_data(models, now_str));
+	this->set_model(model);
 	auto removed_model = this->client_service->remove(model.client_id);
 
+	ASSERT_FALSE(model.is_null());
 	ASSERT_EQ(model.client_id, removed_model.client_id);
 	ASSERT_EQ(model.client_secret, removed_model.client_secret);
 }
@@ -131,7 +180,7 @@ TEST_F(TestsOAuthServices_ClientService, update)
 	auto now_str = now.str();
 	auto model = make_client(now);
 	std::vector<ClientModel> models = {model};
-	this->connection->set_map_rows_data(create_map_data(models, now_str));
+	this->set_model(model);
 	auto updated_model = this->client_service->update(model.client_id);
 
 	ASSERT_FALSE(updated_model.is_null());
