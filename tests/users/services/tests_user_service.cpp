@@ -27,7 +27,7 @@ protected:
 		this->_backend->create_pool();
 		std::list<std::shared_ptr<xw::orm::db::Migration>> migrations = {
 			std::make_shared<Migration001_CreateClient>(this->_backend.get()),
-			std::make_shared<Migration002_CreateUser>(this->_backend.get())
+			std::make_shared<Migration002_CreateUsers>(this->_backend.get())
 		};
 		auto executor = xw::orm::db::MigrationExecutor(
 			this->_backend.get(), migrations,
