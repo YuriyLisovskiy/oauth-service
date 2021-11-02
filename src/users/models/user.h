@@ -25,7 +25,7 @@ public:
 	xw::dt::Datetime created_at;
 	xw::dt::Datetime updated_at;
 
-	static constexpr const char* meta_table_name = "user";
+	static constexpr const char* meta_table_name = "users";
 
 	inline static const std::tuple meta_columns = {
 		xw::orm::db::make_pk_column_meta("id", &UserModel::id),

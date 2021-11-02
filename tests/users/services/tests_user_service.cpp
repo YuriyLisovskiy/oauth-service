@@ -12,7 +12,7 @@
 
 #include "../../../src/users/services/user_service.h"
 #include "../../../src/config/migrations/001_create_client.h"
-#include "../../../src/config/migrations/002_create_user.h"
+#include "../../../src/config/migrations/002_create_users.h"
 
 
 class TestsUsersServices_UserService : public ::testing::Test

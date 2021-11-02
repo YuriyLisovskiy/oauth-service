@@ -12,14 +12,14 @@
 #include <xalwart.orm/db/migration.h>
 
 
-class Migration002_CreateUser : public xw::orm::db::Migration
+class Migration002_CreateUsers : public xw::orm::db::Migration
 {
 public:
-	inline explicit Migration002_CreateUser(auto* backend)
-		: xw::orm::db::Migration(backend, "002_create_user", true)
+	inline explicit Migration002_CreateUsers(auto* backend)
+		: xw::orm::db::Migration(backend, "002_create_users", true)
 	{
 		this->create_table(
-			"user",
+			"users",
 			[](auto& table)
 			{
 				table.template column<long long int>(
