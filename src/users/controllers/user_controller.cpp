@@ -13,13 +13,6 @@ std::unique_ptr<xw::http::HttpResponse> UserController::get(
 ) const
 {
 	auto user = this->_user_service->get_by_id(id);
-	if (user.is_null())
-	{
-		throw xw::http::exc::NotFound(
-			"user with id '" + std::to_string(id) + "' is not found", _ERROR_DETAILS_
-		);
-	}
-
 	return std::make_unique<xw::http::JsonResponse>(user.to_json(), 200);
 }
 
@@ -33,13 +26,6 @@ std::unique_ptr<xw::http::HttpResponse> UserController::put(
 		data["id"] = id;
 		UpdateUserSerializer serializer(this->_user_service);
 		auto updated_user = serializer.save(data);
-		if (updated_user.is_null())
-		{
-			throw xw::http::exc::NotFound(
-				"user with id '" + std::to_string(id) + "' is not found", _ERROR_DETAILS_
-			);
-		}
-
 		return std::make_unique<xw::http::JsonResponse>(updated_user.to_json(), 200);
 	}
 
@@ -53,12 +39,5 @@ std::unique_ptr<xw::http::HttpResponse> UserController::delete_(
 ) const
 {
 	auto user = this->_user_service->remove(id);
-	if (user.is_null())
-	{
-		throw xw::http::exc::NotFound(
-			"user with id '" + std::to_string(id) + "' is not found", _ERROR_DETAILS_
-		);
-	}
-
 	return std::make_unique<xw::http::JsonResponse>(user.to_json(), 200);
 }

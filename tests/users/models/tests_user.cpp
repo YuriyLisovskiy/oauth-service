@@ -21,23 +21,6 @@ protected:
 	}
 };
 
-TEST_F(TestsUsersModels_UserModel, to_string)
-{
-	std::string expected = "User:\n  id: " + std::to_string(this->user.id) +
-		"\n  email: " + this->user.email +
-		"\n  created at: " + this->user.created_at.str() +
-		"\n  updated at: " + this->user.updated_at.str();
-
-	ASSERT_EQ(expected, this->user.to_string());
-}
-
-TEST_F(TestsUsersModels_UserModel, to_string_IsNull)
-{
-	UserModel model;
-	model.mark_as_null();
-	ASSERT_EQ("null", model.to_string());
-}
-
 TEST_F(TestsUsersModels_UserModel, to_json)
 {
 	nlohmann::json expected = {

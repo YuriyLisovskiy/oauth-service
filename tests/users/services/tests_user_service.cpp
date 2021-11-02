@@ -2,78 +2,101 @@
  * Copyright (c) 2021 Yuriy Lisovskiy
  */
 
+#include <memory>
+#include <filesystem>
+
 #include <gtest/gtest.h>
 
+#include <xalwart.orm/sqlite3/backend.h>
+#include <xalwart.orm/db/executor.h>
+
 #include "../../../src/users/services/user_service.h"
-#include "./sql_backend_mock.h"
+#include "../../../src/config/migrations/001_create_client.h"
+#include "../../../src/config/migrations/002_create_user.h"
 
 
 class TestsUsersServices_UserService : public ::testing::Test
 {
 protected:
-	std::shared_ptr<DatabaseConnectionMock> connection = nullptr;
 	std::shared_ptr<UserService> user_service = nullptr;
+	std::string db_file = "/tmp/test.db";
 
 	void SetUp() override
 	{
-		this->connection = std::make_shared<DatabaseConnectionMock>();
-		this->_backend.set_connection(this->connection);
+		this->_backend = std::make_shared<xw::orm::sqlite3::Backend>(3, this->db_file.c_str());
+		this->_backend->create_pool();
+		std::list<std::shared_ptr<xw::orm::db::Migration>> migrations = {
+			std::make_shared<Migration001_CreateClient>(this->_backend.get()),
+			std::make_shared<Migration002_CreateUser>(this->_backend.get())
+		};
+		auto executor = xw::orm::db::MigrationExecutor(
+			this->_backend.get(), migrations,
+			[](auto msg, auto end) { /* logging */ }
+		);
+		executor.apply(this->_backend->schema_editor());
 		this->user_service = std::make_shared<UserService>(
-			std::make_shared<xw::orm::Repository>(&this->_backend),
+			std::make_shared<xw::orm::Repository>(this->_backend.get()),
 			std::make_shared<xw::dt::Timezone>(xw::dt::Timezone::UTC)
 		);
 	}
 
-private:
-	SQLBackendMock _backend;
-};
-
-std::vector<std::map<std::string, char*>> create_map_data(
-	std::map<std::string, UserModel>& data, std::string& dt_str
-)
-{
-	std::vector<std::map<std::string, char*>> map_data;
-	map_data.reserve(data.size());
-	for (auto& model : data)
+	void TearDown() override
 	{
-		map_data.push_back({
-			std::map<std::string, char*>{
-				{"id", (char*)model.first.data()},
-				{"email", model.second.email.data()},
-				{"created_at", dt_str.data()},
-				{"updated_at", dt_str.data()}
-			}
-		});
+		if (std::filesystem::exists(this->db_file))
+		{
+			std::filesystem::remove(this->db_file);
+		}
 	}
 
-	return map_data;
-}
+	void set_data(const std::vector<UserModel>& data)
+	{
+		auto connection = this->_backend->get_connection();
+		auto query = xw::orm::q::Insert<UserModel>(connection.get(), this->_backend->sql_builder());
+		for (auto& model : data)
+		{
+			connection->begin_transaction();
+			query = query.model(model);
+			connection->end_transaction();
+		}
 
-UserModel make_user(long long id, const std::string& email, const xw::dt::Datetime& dt)
-{
-	UserModel user(email, dt, dt);
-	user.id = id;
-	return user;
-}
+		query.commit_batch();
+		this->_backend->release_connection(connection);
+	}
+
+	long long int set_model(const UserModel& model)
+	{
+		auto connection = this->_backend->get_connection();
+		auto query = xw::orm::q::Insert<UserModel>(connection.get(), this->_backend->sql_builder());
+		query = query.model(model);
+		long long int id;
+		query.commit_one(id);
+		this->_backend->release_connection(connection);
+		return id;
+	}
+
+private:
+	std::shared_ptr<xw::orm::sqlite3::Backend> _backend;
+};
 
 TEST_F(TestsUsersServices_UserService, get_all)
 {
 	auto now = xw::dt::Datetime::now();
 	auto now_str = now.str();
-	std::map<std::string, UserModel> expected_result = {
-		{"1", make_user(1, "email1@gmail.com", now)},
-		{"2", make_user(2, "email2@gmail.com", now)},
-		{"3", make_user(3, "email3@gmail.com", now)}
-	};
-	this->connection->set_map_rows_data(create_map_data(expected_result, now_str));
+
+	auto user1 = UserModel("email1@gmail.com", now, now);
+	user1.set_password("super-password");
+	auto user2 = UserModel("email2@gmail.com", now, now);
+	user2.set_password("super-password-2");
+	std::vector<UserModel> expected_result = {user1, user2};
+	this->set_data(expected_result);
 	auto actual_result = this->user_service->get_all();
 
 	ASSERT_EQ(expected_result.size(), actual_result.size());
 
+	size_t i = 0;
 	for (const auto& actual_model : actual_result)
 	{
-		auto expected_model = expected_result[std::to_string(actual_model.id)];
-		ASSERT_EQ(expected_model.id, actual_model.id);
+		auto expected_model = expected_result[i++];
 		ASSERT_EQ(expected_model.email, actual_model.email);
 	}
 }
@@ -87,20 +110,17 @@ TEST_F(TestsUsersServices_UserService, get_by_id)
 {
 	auto now = xw::dt::Datetime::now();
 	auto now_str = now.str();
-	auto model = make_user(1, "email@gmail.com", now);
-	std::map<std::string, UserModel> models = {{"1", model}};
-	this->connection->set_map_rows_data(create_map_data(models, now_str));
-	auto model_got = this->user_service->get_by_id(model.id);
+	auto model = UserModel("email@gmail.com", now, now);
+	model.set_password("super-pass");
+	auto id = this->set_model(model);
+	auto model_got = this->user_service->get_by_id(id);
 
-	ASSERT_EQ(model.id, model_got.id);
-	ASSERT_EQ(model.email, model_got.email);
+	ASSERT_EQ(model_got.email, model.email);
 }
 
 TEST_F(TestsUsersServices_UserService, get_by_id_NonExistent)
 {
-	auto model = this->user_service->get_by_id(777);
-
-	ASSERT_TRUE(model.is_null());
+	ASSERT_THROW(auto _ = this->user_service->get_by_id(777), UserNotFoundException);
 }
 
 TEST_F(TestsUsersServices_UserService, create)
@@ -114,42 +134,36 @@ TEST_F(TestsUsersServices_UserService, create)
 
 TEST_F(TestsUsersServices_UserService, remove_NonExistent)
 {
-	auto removed_model = this->user_service->remove(777);
-
-	ASSERT_TRUE(removed_model.is_null());
+	ASSERT_THROW(auto _ = this->user_service->remove(777), UserNotFoundException);
 }
 
 TEST_F(TestsUsersServices_UserService, remove)
 {
 	auto now = xw::dt::Datetime::now();
 	auto now_str = now.str();
-	auto model = make_user(1, "email@gmail.com", now);
-	std::map<std::string, UserModel> models = {{"1", model}};
-	this->connection->set_map_rows_data(create_map_data(models, now_str));
-	auto removed_model = this->user_service->remove(model.id);
+	auto model = UserModel("email@gmail.com", now, now);
+	model.set_password("super-pass");
+	auto id = this->set_model(model);
+	auto removed_model = this->user_service->remove(id);
 
-	ASSERT_EQ(model.id, removed_model.id);
 	ASSERT_EQ(model.email, removed_model.email);
 }
 
 TEST_F(TestsUsersServices_UserService, update_NonExistent)
 {
-	auto updated_model = this->user_service->update(777, "", "");
-
-	ASSERT_TRUE(updated_model.is_null());
+	ASSERT_THROW(auto _ = this->user_service->update(777, "", ""), UserNotFoundException);
 }
 
 TEST_F(TestsUsersServices_UserService, update)
 {
 	auto now = xw::dt::Datetime::now(std::make_shared<xw::dt::Timezone>(xw::dt::Timezone::UTC));
 	auto now_str = now.str();
-	auto model = make_user(1, "email@gmail.com", now);
-	std::map<std::string, UserModel> models = {{"1", model}};
-	this->connection->set_map_rows_data(create_map_data(models, now_str));
-	auto updated_model = this->user_service->update(model.id, "new_email@gmail.com", {});
+	auto model = UserModel("email@gmail.com", now, now);
+	auto id = this->set_model(model);
+	std::string new_email = "new_email@gmail.com";
+	auto updated_model = this->user_service->update(id, new_email, {});
 
 	ASSERT_FALSE(updated_model.is_null());
-	ASSERT_EQ(model.id, updated_model.id);
-	ASSERT_NE(model.email, updated_model.email);
-	ASSERT_LE(model.updated_at, updated_model.updated_at);
+	ASSERT_EQ(updated_model.email, new_email);
+	ASSERT_LE(updated_model.updated_at, model.updated_at);
 }

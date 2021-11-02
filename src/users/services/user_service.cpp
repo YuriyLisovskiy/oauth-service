@@ -24,6 +24,11 @@ UserModel UserService::get_by_id(long long id) const
 		    .where(xw::orm::q::c(&UserModel::id) == id)
 			.first();
 	});
+	if (user.is_null())
+	{
+		throw UserNotFoundException(id, _ERROR_DETAILS_);
+	}
+
 	return user;
 }
 
@@ -52,24 +57,27 @@ UserModel UserService::update(
 		user = this->_repository->select<UserModel>()
 		    .where(xw::orm::q::c(&UserModel::id) == id)
 			.first();
-		if (!user.is_null())
+		if (user.is_null())
 		{
-			if (email.has_value())
-			{
-				user.email = email.value();
-			}
-
-			if (raw_password.has_value())
-			{
-				user.set_password(raw_password.value());
-			}
-
-			user.updated_at = xw::dt::Datetime::now(this->_timezone);
-			this->_repository->update<UserModel>()
-			    .model(user)
-				.commit_one();
+			throw UserNotFoundException(id, _ERROR_DETAILS_);
 		}
+
+		if (email.has_value())
+		{
+			user.email = email.value();
+		}
+
+		if (raw_password.has_value())
+		{
+			user.set_password(raw_password.value());
+		}
+
+		user.updated_at = xw::dt::Datetime::now(this->_timezone);
+		this->_repository->update<UserModel>()
+		    .model(user)
+		    .commit_one();
 	});
+
 	return user;
 }
 
@@ -81,12 +89,15 @@ UserModel UserService::remove(long long int id) const
 		user = this->_repository->select<UserModel>()
 		    .where(xw::orm::q::c(&UserModel::id) == id)
 			.first();
-		if (!user.is_null())
+		if (user.is_null())
 		{
-			this->_repository->delete_<UserModel>()
-			    .where(xw::orm::q::c(&UserModel::id) == id)
-				.commit();
+			throw UserNotFoundException(id, _ERROR_DETAILS_);
 		}
+
+		this->_repository->delete_<UserModel>()
+		    .where(xw::orm::q::c(&UserModel::id) == id)
+		    .commit();
 	});
+
 	return user;
 }

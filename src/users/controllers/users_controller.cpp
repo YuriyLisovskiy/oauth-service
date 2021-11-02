@@ -23,14 +23,14 @@ std::unique_ptr<xw::http::HttpResponse> UsersController::get(xw::http::Request* 
 std::unique_ptr<xw::http::HttpResponse> UsersController::post(xw::http::Request* request) const
 {
 	auto data = request->json();
-	if (!data.is_null())
+	if (data.is_null())
 	{
-		CreateUserSerializer serializer(this->_user_service);
-		auto created_user = serializer.save(data);
-		return std::make_unique<xw::http::JsonResponse>(created_user.to_json(), 201);
+		return std::make_unique<xw::http::JsonResponse>(
+			nlohmann::json(nlohmann::json::value_t::object), 400
+		);
 	}
 
-	return std::make_unique<xw::http::JsonResponse>(
-		nlohmann::json(nlohmann::json::value_t::object), 400
-	);
+	CreateUserSerializer serializer(this->_user_service);
+	auto created_user = serializer.save(data);
+	return std::make_unique<xw::http::JsonResponse>(created_user.to_json(), 201);
 }
