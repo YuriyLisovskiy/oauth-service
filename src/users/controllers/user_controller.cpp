@@ -21,17 +21,17 @@ std::unique_ptr<xw::http::HttpResponse> UserController::put(
 ) const
 {
 	auto data = request->json();
-	if (!data.is_null())
+	if (data.is_null())
 	{
-		data["id"] = id;
-		UpdateUserSerializer serializer(this->_user_service);
-		auto updated_user = serializer.save(data);
-		return std::make_unique<xw::http::JsonResponse>(updated_user.to_json(), 200);
+		return std::make_unique<xw::http::JsonResponse>(
+			nlohmann::json{{"message", "request data is null"}}, 400
+		);
 	}
 
-	return std::make_unique<xw::http::JsonResponse>(
-		nlohmann::json(nlohmann::json::value_t::object), 400
-	);
+	data["id"] = id;
+	UpdateUserSerializer serializer(this->_user_service);
+	auto updated_user = serializer.save(data);
+	return std::make_unique<xw::http::JsonResponse>(updated_user.to_json(), 200);
 }
 
 std::unique_ptr<xw::http::HttpResponse> UserController::delete_(

@@ -26,7 +26,7 @@ std::unique_ptr<xw::http::HttpResponse> UsersController::post(xw::http::Request*
 	if (data.is_null())
 	{
 		return std::make_unique<xw::http::JsonResponse>(
-			nlohmann::json(nlohmann::json::value_t::object), 400
+			nlohmann::json{{"message", "request data is null"}}, 400
 		);
 	}
 
