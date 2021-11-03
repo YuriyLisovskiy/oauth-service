@@ -16,7 +16,9 @@ public:
 	{
 	}
 
-	void urlpatterns() override;
+	inline void urlpatterns() override
+	{
+	}
 
 	void commands() override;
 };

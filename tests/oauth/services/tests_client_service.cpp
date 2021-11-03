@@ -23,7 +23,7 @@ protected:
 
 	void SetUp() override
 	{
-		this->_backend = std::make_shared<xw::orm::sqlite3::Backend>(3, this->db_file.c_str());
+		this->_backend = std::make_shared<xw::orm::sqlite3::Backend>(1, this->db_file.c_str());
 		this->_backend->create_pool();
 		std::list<std::shared_ptr<xw::orm::db::Migration>> migrations = {
 			std::make_shared<Migration001_CreateClient>(this->_backend.get())
