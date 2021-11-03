@@ -15,9 +15,9 @@ class UserController : public xw::ctrl::Controller<long long int>
 {
 public:
 	explicit inline UserController(
-		const xw::conf::Settings* settings, std::shared_ptr<IUserService> user_service
+		const xw::ILogger* logger, std::shared_ptr<IUserService> user_service
 	) :
-		xw::ctrl::Controller<long long int>({"get", "put", "delete"}, settings)
+		xw::ctrl::Controller<long long int>({"get", "put", "delete"}, logger)
 	{
 		this->_user_service = std::move(user_service);
 		xw::require_non_null(this->_user_service.get(), "'user_service' is nullptr", _ERROR_DETAILS_);
