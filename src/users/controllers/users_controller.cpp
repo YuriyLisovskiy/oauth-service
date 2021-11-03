@@ -8,7 +8,7 @@
 #include "../serializers/user_serializers.h"
 
 
-std::unique_ptr<xw::http::HttpResponse> UsersController::get(xw::http::Request* request) const
+std::unique_ptr<xw::http::IResponse> UsersController::get(xw::http::IRequest* request) const
 {
 	auto user_models = this->_user_service->get_all();
 	auto users = nlohmann::json::array();
@@ -20,14 +20,12 @@ std::unique_ptr<xw::http::HttpResponse> UsersController::get(xw::http::Request* 
 	return std::make_unique<xw::http::JsonResponse>(nlohmann::json{{"users", users}});
 }
 
-std::unique_ptr<xw::http::HttpResponse> UsersController::post(xw::http::Request* request) const
+std::unique_ptr<xw::http::IResponse> UsersController::post(xw::http::IRequest* request) const
 {
 	auto data = request->json();
 	if (data.is_null())
 	{
-		return std::make_unique<xw::http::JsonResponse>(
-			nlohmann::json{{"message", "request data is null"}}, 400
-		);
+		throw xw::http::exc::BadRequest("request data is null", _ERROR_DETAILS_);
 	}
 
 	CreateUserSerializer serializer(this->_user_service);

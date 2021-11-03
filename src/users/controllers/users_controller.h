@@ -23,9 +23,9 @@ public:
 		xw::require_non_null(this->_user_service.get(), "'user_service' is nullptr", _ERROR_DETAILS_);
 	}
 
-	std::unique_ptr<xw::http::HttpResponse> get(xw::http::Request* request) const override;
+	std::unique_ptr<xw::http::IResponse> get(xw::http::IRequest* request) const override;
 
-	std::unique_ptr<xw::http::HttpResponse> post(xw::http::Request* request) const override;
+	std::unique_ptr<xw::http::IResponse> post(xw::http::IRequest* request) const override;
 
 private:
 	std::shared_ptr<IUserService> _user_service = nullptr;
