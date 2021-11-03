@@ -89,6 +89,11 @@ public:
 		this->_data = std::move(data);
 	}
 
+	void set_data(const std::vector<UserModel>& data)
+	{
+		this->_data = std::list<UserModel>(data.begin(), data.end());
+	}
+
 	static xw::dt::Datetime get_now()
 	{
 		return xw::dt::Datetime::now(std::make_shared<xw::dt::Timezone>(xw::dt::Timezone::UTC));

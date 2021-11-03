@@ -30,7 +30,7 @@ TEST_F(TestsUsersSerializers_CreateUserSerializer, process_Create)
 	model.id = 1;
 	std::string new_password = "new-super-password";
 	model.set_password(new_password);
-	this->user_service_mock->set_data({model});
+	this->user_service_mock->set_data(std::list<UserModel>{model});
 	auto created_model = this->serializer->process(model.email, new_password);
 
 	ASSERT_FALSE(created_model.is_null());
@@ -58,7 +58,7 @@ TEST_F(TestsUsersSerializers_UpdateUserSerializer, process_UpdateEmailOnly)
 	UserModel model("email@email.com", now, now);
 	model.id = 1;
 	model.set_password("hello-world");
-	this->user_service_mock->set_data({model});
+	this->user_service_mock->set_data(std::list<UserModel>{model});
 	std::string new_email = "my_email@email.com";
 	auto updated_model = this->serializer->process(model.id, new_email, {});
 
@@ -73,7 +73,7 @@ TEST_F(TestsUsersSerializers_UpdateUserSerializer, process_UpdatePasswordOnly)
 	UserModel model("email@email.com", now, now);
 	model.id = 1;
 	model.set_password("hello-world");
-	this->user_service_mock->set_data({model});
+	this->user_service_mock->set_data(std::list<UserModel>{model});
 	std::string new_password = "super-password-new";
 	auto updated_model = this->serializer->process(model.id, "my_email@email.com", new_password);
 
@@ -88,7 +88,7 @@ TEST_F(TestsUsersSerializers_UpdateUserSerializer, process_UpdateAll)
 	auto now = UserServiceMock::get_now();
 	UserModel model("email@email.com", now, now);
 	model.id = 1;
-	this->user_service_mock->set_data({model});
+	this->user_service_mock->set_data(std::list<UserModel>{model});
 	std::string new_email = "my_email@email.com";
 	std::string new_password = "super-password-new";
 	auto updated_model = this->serializer->process(model.id, new_email, new_password);
