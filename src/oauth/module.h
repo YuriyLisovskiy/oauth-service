@@ -11,11 +11,14 @@
 class ModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	explicit inline ModuleConfig(xw::conf::Settings* settings) : xw::conf::ModuleConfig(settings)
+	explicit inline ModuleConfig(const std::string& name, xw::conf::Settings* settings) :
+		xw::conf::ModuleConfig(name, settings)
 	{
 	}
 
-	void urlpatterns() override;
+	inline void urlpatterns() override
+	{
+	}
 
 	void commands() override;
 };
