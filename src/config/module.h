@@ -8,14 +8,14 @@
 #include <xalwart/conf/module.h>
 
 
-class ModuleConfig : public xw::conf::ModuleConfig
+class RootModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	explicit inline ModuleConfig(
+	explicit inline RootModuleConfig(
 		const std::string& registration_name, xw::conf::Settings* settings
 	) : xw::conf::ModuleConfig(registration_name, settings)
 	{
 	}
 
-	void commands() override;
+	void urlpatterns() override;
 };
