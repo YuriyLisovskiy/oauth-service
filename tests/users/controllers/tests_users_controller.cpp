@@ -21,6 +21,11 @@ protected:
 	}
 };
 
+TEST_F(TestsUsersControllers_UsersController, contructor_ThrowsNullPointerExceptionOnNullptrService)
+{
+	ASSERT_THROW(UsersController(nullptr, nullptr), xw::NullPointerException);
+}
+
 TEST_F(TestsUsersControllers_UsersController, get_EmptyUsersList)
 {
 	UsersController controller(nullptr, this->user_service_mock);

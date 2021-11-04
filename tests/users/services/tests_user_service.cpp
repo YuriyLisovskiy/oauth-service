@@ -11,6 +11,7 @@
 #include <xalwart.orm/db/executor.h>
 
 #include "../../../src/users/services/user_service.h"
+#include "../../../src/users/services/exceptions.h"
 #include "../../../src/config/migrations/001_create_client.h"
 #include "../../../src/config/migrations/002_create_users.h"
 

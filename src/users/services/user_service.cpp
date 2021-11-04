@@ -4,6 +4,9 @@
 
 #include "./user_service.h"
 
+// oauth-service
+#include "./exceptions.h"
+
 
 std::list<UserModel> UserService::get_all() const
 {

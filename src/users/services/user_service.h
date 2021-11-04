@@ -51,15 +51,3 @@ private:
 	std::shared_ptr<xw::orm::Repository> _repository;
 	std::shared_ptr<xw::dt::Timezone> _timezone;
 };
-
-class UserNotFoundException : public xw::http::exc::NotFound
-{
-public:
-	explicit inline UserNotFoundException(
-		long long int id, int line=0, const char* function="", const char* file=""
-	) : xw::http::exc::NotFound(
-		"user with id '" + std::to_string(id) + "' is not found", line, function, file
-	)
-	{
-	}
-};

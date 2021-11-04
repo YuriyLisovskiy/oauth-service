@@ -8,6 +8,7 @@
 #include <string>
 
 #include "../../src/users/services/interfaces.h"
+#include "../../src/users/services/exceptions.h"
 
 
 class UserServiceMock : public IUserService
@@ -27,9 +28,7 @@ public:
 		);
 		if (model == this->_data.end())
 		{
-			UserModel null_model;
-			null_model.mark_as_null();
-			return null_model;
+			throw UserNotFoundException(id, _ERROR_DETAILS_);
 		}
 
 		return *model;
@@ -38,6 +37,15 @@ public:
 	[[nodiscard]]
 	UserModel create(const std::string& email, const std::string& raw_password) const override
 	{
+		if (this->_data.empty())
+		{
+			auto now = get_now();
+			UserModel user(email, now, now);
+			user.id = 1;
+			user.set_password(raw_password);
+			return user;
+		}
+
 		return this->_data.front();
 	}
 
@@ -62,9 +70,7 @@ public:
 			}
 		}
 
-		UserModel null_model;
-		null_model.mark_as_null();
-		return null_model;
+		throw UserNotFoundException(id, _ERROR_DETAILS_);
 	}
 
 	[[nodiscard]]
@@ -76,9 +82,7 @@ public:
 		);
 		if (model == this->_data.end())
 		{
-			UserModel null_model;
-			null_model.mark_as_null();
-			return null_model;
+			throw UserNotFoundException(id, _ERROR_DETAILS_);
 		}
 
 		return *model;
