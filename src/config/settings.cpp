@@ -20,7 +20,7 @@
 void Settings::register_modules()
 {
 	this->module<RootModuleConfig>();
-	this->module<ModuleConfig>();
+	this->module<OAuthModuleConfig>();
 	this->module<UsersModuleConfig>();
 }
 

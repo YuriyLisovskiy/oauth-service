@@ -8,7 +8,7 @@ allowed_hosts:
 
 modules:
   - RootModuleConfig
-  - ModuleConfig
+  - OAuthModuleConfig
   - UsersModuleConfig
 
 middleware:

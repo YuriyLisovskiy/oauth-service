@@ -7,5 +7,6 @@
 
 void RootModuleConfig::urlpatterns()
 {
+	this->include("OAuthModuleConfig", R"(oauth/)", "oauth");
 	this->include("UsersModuleConfig", R"(users/)", "users");
 }

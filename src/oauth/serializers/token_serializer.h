@@ -39,11 +39,6 @@ public:
 		std::optional<std::string> client_secret
 	) override
 	{
-		if (grant_type.value() != "client_credentials")
-		{
-			// TODO: throw: invalid grant type, I guess
-		}
-
 		auto client = this->_client_service->get_by_id(client_id.value());
 		if (client.client_secret != client_secret.value())
 		{

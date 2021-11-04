@@ -15,10 +15,12 @@
 #include "./services/interfaces.h"
 
 
-class ModuleConfig : public xw::conf::ModuleConfig
+class OAuthModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	explicit ModuleConfig(const std::string& registration_name, xw::conf::Settings* settings);
+	explicit OAuthModuleConfig(const std::string& registration_name, xw::conf::Settings* settings);
+
+	void configure() override;
 
 	void urlpatterns() override;
 
