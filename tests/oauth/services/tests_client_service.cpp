@@ -11,6 +11,7 @@
 #include <xalwart.orm/db/migration.h>
 #include <xalwart.orm/db/executor.h>
 
+#include "../../../src/oauth/exceptions.h"
 #include "../../../src/oauth/services/client_service.h"
 #include "../../../src/config/migrations/001_create_client.h"
 
@@ -149,9 +150,7 @@ TEST_F(TestsOAuthServices_ClientService, create_WithCustomId)
 
 TEST_F(TestsOAuthServices_ClientService, remove_NonExistent)
 {
-	auto removed_model = this->client_service->remove("super-key");
-
-	ASSERT_TRUE(removed_model.is_null());
+	ASSERT_THROW(auto _ = this->client_service->remove("super-id"), ClientNotFoundError);
 }
 
 TEST_F(TestsOAuthServices_ClientService, remove)
@@ -169,9 +168,7 @@ TEST_F(TestsOAuthServices_ClientService, remove)
 
 TEST_F(TestsOAuthServices_ClientService, update_NonExistent)
 {
-	auto updated_model = this->client_service->update("super-key");
-
-	ASSERT_TRUE(updated_model.is_null());
+	ASSERT_THROW(auto _ = this->client_service->update("super-id"), ClientNotFoundError);
 }
 
 TEST_F(TestsOAuthServices_ClientService, update)

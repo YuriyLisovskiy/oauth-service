@@ -8,6 +8,9 @@
 #include <random>
 #include <sstream>
 
+// oauth-service
+#include "../exceptions.h"
+
 
 std::string _generate_random_alphanum_string(size_t length)
 {
@@ -76,6 +79,23 @@ std::list<ClientModel> ClientService::list() const
 	return clients;
 }
 
+ClientModel ClientService::get_by_id(const std::string& id) const
+{
+	ClientModel client;
+	this->_repository->wrap([&](auto*)
+	{
+		client = this->_repository->select<ClientModel>()
+			.where(xw::orm::q::c(&ClientModel::client_id) == id)
+		    .first();
+	});
+	if (client.is_null())
+	{
+		throw ClientNotFoundError(id, _ERROR_DETAILS_);
+	}
+
+	return client;
+}
+
 ClientModel ClientService::create(std::string id) const
 {
 	if (id.empty())
@@ -88,6 +108,7 @@ ClientModel ClientService::create(std::string id) const
 	ClientModel client(id, secret_key, now, now);
 	this->_repository->wrap([&](auto*)
 	{
+		// TODO: check if client with the same id already exists.
 		this->_repository->insert<ClientModel>().model(client).commit_one();
 	});
 	return client;
@@ -101,32 +122,38 @@ ClientModel ClientService::remove(const std::string& id) const
 		client = this->_repository->select<ClientModel>()
 		    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 			.first();
-		if (!client.is_null())
+		if (client.is_null())
 		{
-			this->_repository->delete_<ClientModel>()
-			    .where(xw::orm::q::c(&ClientModel::client_id) == id)
-				.commit();
+			// TODO: test required for this branch
+			throw ClientNotFoundError(id, _ERROR_DETAILS_);
 		}
+
+		this->_repository->delete_<ClientModel>()
+		    .where(xw::orm::q::c(&ClientModel::client_id) == id)
+			.commit();
 	});
 	return client;
 }
 
-ClientModel ClientService::update(const std::string& client_id) const
+ClientModel ClientService::update(const std::string& id) const
 {
 	ClientModel client;
 	this->_repository->wrap([&](auto*)
 	{
 		client = this->_repository->select<ClientModel>()
-		    .where(xw::orm::q::c(&ClientModel::client_id) == client_id)
+		    .where(xw::orm::q::c(&ClientModel::client_id) == id)
 			.first();
-		if (!client.is_null())
+		if (client.is_null())
 		{
-			client.client_secret = _generate_random_alphanum_string(64);
-			client.updated_at = xw::dt::Datetime::now(this->_timezone);
-			this->_repository->update<ClientModel>()
-			    .model(client)
-				.commit_one();
+			// TODO: test required for this branch
+			throw ClientNotFoundError(id, _ERROR_DETAILS_);
 		}
+
+		client.client_secret = _generate_random_alphanum_string(64);
+		client.updated_at = xw::dt::Datetime::now(this->_timezone);
+		this->_repository->update<ClientModel>()
+		    .model(client)
+		    .commit_one();
 	});
 	return client;
 }

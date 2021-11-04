@@ -16,7 +16,11 @@
 #include <xalwart.base/utility.h>
 #include <xalwart.base/exceptions.h>
 
+// oauth-service
+#include "./exceptions.h"
 
+
+// TODO: tests required
 template <class Type>
 struct SerializerField
 {
@@ -32,13 +36,8 @@ struct SerializerField
 	}
 };
 
-template<class T>
-concept default_initializable =
-	std::is_constructible_v<T> &&
-	requires { T{}; } &&
-	requires { ::new (static_cast<void*>(nullptr)) T; };
-
-template <default_initializable ModelType, class ...Args>
+// TODO: tests required
+template <class ...Args>
 class Serializer
 {
 public:
@@ -77,10 +76,7 @@ public:
 			}
 			else if (field.required)
 			{
-				// TODO: throw validation error
-				throw xw::BaseException(
-					std::string("field '" + field.name + "' is required").c_str(), _ERROR_DETAILS_
-				);
+				throw ValidationError("missing '" + field.name + "' field", _ERROR_DETAILS_);
 			}
 			else
 			{
@@ -106,12 +102,19 @@ protected:
 	std::tuple<SerializerField<Args>...> fields;
 };
 
+template<class T>
+concept default_initializable =
+	std::is_constructible_v<T> &&
+	requires { T{}; } &&
+	requires { ::new (static_cast<void*>(nullptr)) T; };
+
+// TODO: tests required
 template <default_initializable ModelType, class ...Args>
-class ModelSerializer : public Serializer<ModelType, Args...>
+class ModelSerializer : public Serializer<Args...>
 {
 public:
 	explicit inline ModelSerializer(SerializerField<Args>&& ...fields) :
-		Serializer<ModelType, Args...>(std::forward<SerializerField<Args>>(fields)...)
+		Serializer<Args...>(std::forward<SerializerField<Args>>(fields)...)
 	{
 	}
 

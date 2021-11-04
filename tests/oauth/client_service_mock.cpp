@@ -4,6 +4,22 @@
 
 #include "./client_service_mock.h"
 
+#include "../../src/oauth/exceptions.h"
+
+
+ClientModel ClientServiceMock::get_by_id(const std::string& id) const
+{
+	auto model = std::find_if(
+		this->_clients.begin(), this->_clients.end(),
+		[id](const ClientModel& item) -> bool { return item.client_id == id; }
+	);
+	if (model == this->_clients.end())
+	{
+		throw ClientNotFoundError(id, _ERROR_DETAILS_);
+	}
+
+	return *model;
+}
 
 ClientModel ClientServiceMock::create(std::string id) const
 {
