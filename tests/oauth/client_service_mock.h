@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "../../../src/oauth/services/interfaces.h"
-#include "../../../src/oauth/services/client_service.h"
+#include "../../src/oauth/services/interfaces.h"
+#include "../../src/oauth/services/client_service.h"
 
 
 class ClientServiceMock : public IClientService

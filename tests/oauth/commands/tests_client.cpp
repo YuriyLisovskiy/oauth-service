@@ -11,8 +11,8 @@
 
 #include "../../../src/oauth/commands/client.h"
 
-#include "../logger_mock.h"
-#include "./client_service_mock.h"
+#include "../../logger_mock.h"
+#include "../client_service_mock.h"
 
 
 template <class CommandType>

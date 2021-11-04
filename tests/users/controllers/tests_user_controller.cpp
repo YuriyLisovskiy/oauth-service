@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "./request_mock.h"
+#include "../../request_mock.h"
 #include "../user_service_mock.h"
 #include "../../../src/users/controllers/user_controller.h"
 #include "../../../src/users/services/exceptions.h"
