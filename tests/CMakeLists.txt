@@ -38,4 +38,5 @@ function(add_sub_tests SUB_NAME)
 endfunction(add_sub_tests)
 
 add_tests("" all)
+add_sub_tests(oauth)
 add_sub_tests(users)
