@@ -20,14 +20,13 @@
 #include "./exceptions.h"
 
 
-// TODO: tests required
 template <class Type>
 struct SerializerField
 {
 	using type = Type;
 	std::string name;
 	bool required = false;
-	std::function<bool(type)> validator = nullptr;
+	std::function<void(type)> validator = nullptr;
 
 	[[nodiscard]]
 	inline bool is_valid() const
@@ -36,7 +35,6 @@ struct SerializerField
 	}
 };
 
-// TODO: tests required
 template <class ...Args>
 class Serializer
 {
@@ -52,6 +50,14 @@ public:
 
 	inline std::tuple<std::optional<Args>...> validate(nlohmann::json data)
 	{
+		if (!data.is_object())
+		{
+			throw ValidationError(
+				"JSON object is required, got " + std::string(data.type_name()),
+				_ERROR_DETAILS_
+			);
+		}
+
 		struct field_info
 		{
 			nlohmann::json data;
@@ -91,12 +97,12 @@ public:
 			ordered_data.push_back({data[field.name], field_exists});
 		});
 
-		std::tuple<Args...> validated_data;
+		std::tuple<std::optional<Args>...> validated_data;
 		xw::util::tuple_for_each(validated_data, [&](size_t i, auto& elem) -> void {
 			auto item = ordered_data[i];
 			if (item.exists)
 			{
-				elem = item.data.template get<typename std::remove_reference<decltype(elem)>::type>();
+				elem = item.data.template get<typename std::remove_reference<decltype(*elem)>::type>();
 			}
 		});
 
