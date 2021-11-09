@@ -100,13 +100,22 @@ ClientModel ClientService::create(std::string id) const
 		id = _generate_uuid4();
 	}
 
-	auto now = xw::dt::Datetime::now(this->_timezone);
-	auto secret_key = _generate_random_alphanum_string(64);
-	ClientModel client(id, secret_key, now, now);
-	this->_repository->wrap([&](auto*)
+	ClientModel client;
+	this->_repository->transaction([&](auto& transaction)
 	{
-		// TODO: check if client with the same id already exists.
-		this->_repository->insert<ClientModel>().model(client).commit_one();
+		client = transaction.template select<ClientModel>()
+			.where(xw::orm::q::c(&ClientModel::client_id) == id)
+			.first();
+		if (!client.is_null())
+		{
+			throw ClientAlreadyExistsError(id, _ERROR_DETAILS_);
+		}
+
+		auto now = xw::dt::Datetime::now(this->_timezone);
+		auto secret_key = _generate_random_alphanum_string(64);
+		client = ClientModel(id, secret_key, now, now);
+		transaction.template insert<ClientModel>().model(client).commit_one();
+		transaction.commit();
 	});
 	return client;
 }
@@ -121,7 +130,6 @@ ClientModel ClientService::remove(const std::string& id) const
 			.first();
 		if (client.is_null())
 		{
-			// TODO: test required for this branch
 			throw ClientNotFoundError(id, _ERROR_DETAILS_);
 		}
 
@@ -142,7 +150,6 @@ ClientModel ClientService::update(const std::string& id) const
 			.first();
 		if (client.is_null())
 		{
-			// TODO: test required for this branch
 			throw ClientNotFoundError(id, _ERROR_DETAILS_);
 		}
 

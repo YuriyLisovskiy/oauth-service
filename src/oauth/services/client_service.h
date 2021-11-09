@@ -35,7 +35,6 @@ public:
 	[[nodiscard]]
 	std::list<ClientModel> list() const override;
 
-	// TODO: tests required
 	[[nodiscard]]
 	ClientModel get_by_id(const std::string& id) const override;
 

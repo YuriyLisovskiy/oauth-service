@@ -130,6 +130,26 @@ TEST_F(TestsOAuthServices_ClientService, list_Empty)
 	ASSERT_TRUE(this->client_service->list().empty());
 }
 
+TEST_F(TestsOAuthServices_ClientService, get_by_id)
+{
+	auto now = xw::dt::Datetime::now();
+	auto now_str = now.str();
+	auto model = make_client(now);
+	this->set_model(model);
+	auto model_got = this->client_service->get_by_id(model.client_id);
+
+	ASSERT_FALSE(model_got.is_null());
+	ASSERT_EQ(model.client_id, model_got.client_id);
+	ASSERT_EQ(model.client_secret, model_got.client_secret);
+}
+
+TEST_F(TestsOAuthServices_ClientService, get_by_id_NonExistent)
+{
+	auto model_got = this->client_service->get_by_id("super-id");
+
+	ASSERT_TRUE(model_got.is_null());
+}
+
 TEST_F(TestsOAuthServices_ClientService, create_WithDefaultId)
 {
 	auto created_model = this->client_service->create("");
@@ -148,6 +168,16 @@ TEST_F(TestsOAuthServices_ClientService, create_WithCustomId)
 	ASSERT_EQ(created_model.client_id, client_id);
 }
 
+TEST_F(TestsOAuthServices_ClientService, create_Existent)
+{
+	auto now = xw::dt::Datetime::now();
+	auto now_str = now.str();
+	auto model = make_client(now);
+	this->set_model(model);
+
+	ASSERT_THROW(auto _ = this->client_service->create(model.client_id), ClientAlreadyExistsError);
+}
+
 TEST_F(TestsOAuthServices_ClientService, remove_NonExistent)
 {
 	ASSERT_THROW(auto _ = this->client_service->remove("super-id"), ClientNotFoundError);
@@ -161,7 +191,7 @@ TEST_F(TestsOAuthServices_ClientService, remove)
 	this->set_model(model);
 	auto removed_model = this->client_service->remove(model.client_id);
 
-	ASSERT_FALSE(model.is_null());
+	ASSERT_FALSE(removed_model.is_null());
 	ASSERT_EQ(model.client_id, removed_model.client_id);
 	ASSERT_EQ(model.client_secret, removed_model.client_secret);
 }

@@ -10,6 +10,9 @@
 // xalwart
 #include <xalwart.base/exceptions.h>
 
+// oauth-service
+#include "../exceptions.h"
+
 
 void ClientSubcommand::add_flags()
 {
@@ -57,8 +60,16 @@ bool NewClientCommand::handle()
 	}
 
 	auto client_id = this->client_id_flag->get();
-	auto created_client = this->client_service->create(client_id);
-	this->logger->info("Created:\n" + created_client.to_string());
+	try
+	{
+		auto created_client = this->client_service->create(client_id);
+		this->logger->info("Created:\n" + created_client.to_string());
+	}
+	catch (const ClientAlreadyExistsError& exc)
+	{
+		this->logger->error(exc.what());
+	}
+
 	return true;
 }
 
@@ -96,12 +107,12 @@ bool UpdateClientCommand::handle()
 	}
 
 	auto client_id = this->client_id_flag->get();
-	auto client = this->client_service->update(client_id);
-	if (!client.is_null())
+	try
 	{
+		auto client = this->client_service->update(client_id);
 		this->logger->info("Updated:\n" + client.to_string());
 	}
-	else
+	catch (const ClientNotFoundError&)
 	{
 		this->log_client_not_found(client_id);
 	}
@@ -117,12 +128,12 @@ bool DeleteClientCommand::handle()
 	}
 
 	auto client_id = this->client_id_flag->get();
-	auto client = this->client_service->remove(client_id);
-	if (!client.is_null())
+	try
 	{
+		auto client = this->client_service->remove(client_id);
 		this->logger->info("Deleted:\n" + client.to_string());
 	}
-	else
+	catch (const ClientNotFoundError&)
 	{
 		this->log_client_not_found(client_id);
 	}

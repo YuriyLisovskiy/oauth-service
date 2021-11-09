@@ -112,7 +112,19 @@ public:
 	explicit inline ClientNotFoundError(
 		const std::string& id, int line=0, const char* function="", const char* file=""
 	) : xw::http::exc::NotFound(
-		"client with id '" + id + "' is not found", line, function, file
+		"Client with id '" + id + "' is not found", line, function, file
+	)
+	{
+	}
+};
+
+class ClientAlreadyExistsError : public xw::http::exc::NotFound
+{
+public:
+	explicit inline ClientAlreadyExistsError(
+		const std::string& id, int line=0, const char* function="", const char* file=""
+	) : xw::http::exc::NotFound(
+		"Client with id '" + id + "' already exists.", line, function, file
 	)
 	{
 	}
