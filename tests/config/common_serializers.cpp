@@ -123,3 +123,41 @@ TEST(TestsConfig_Serializer, validate_ThrowInFieldValidator)
 
 	ASSERT_THROW(serializer.validate({{"test_int", 777}}), std::runtime_error);
 }
+
+struct CustomModel
+{
+	int id;
+};
+
+class CustomModelSerializer : public ModelSerializer<CustomModel, int>
+{
+public:
+	CustomModelSerializer() : ModelSerializer(
+		{.name="test_int", .required=true}
+	)
+	{
+	}
+
+	CustomModel process(std::optional<int> id) override
+	{
+		return {id.value()};
+	}
+};
+
+TEST(TestsConfig_ModelSerializer, process)
+{
+	CustomModelSerializer serializer;
+	int expected = 777;
+	auto model = serializer.process(std::make_optional(expected));
+
+	ASSERT_EQ(model.id, expected);
+}
+
+TEST(TestsConfig_ModelSerializer, save)
+{
+	CustomModelSerializer serializer;
+	int expected = 777;
+	default_initializable auto model = serializer.save({{"test_int", expected}});
+
+	ASSERT_EQ(model.id, expected);
+}

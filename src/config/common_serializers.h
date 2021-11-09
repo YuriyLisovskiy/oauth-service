@@ -119,7 +119,6 @@ concept default_initializable =
 	requires { T{}; } &&
 	requires { ::new (static_cast<void*>(nullptr)) T; };
 
-// TODO: tests required
 template <default_initializable ModelType, class ...Args>
 class ModelSerializer : public Serializer<Args...>
 {
