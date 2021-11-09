@@ -33,30 +33,59 @@ public:
 		xw::require_non_null(this->_client_service.get(), "client service is nullptr", _ERROR_DETAILS_);
 	}
 
+	inline void on_validation_error(const std::string& field_name) const override
+	{
+		throw OAuthError(
+			OAuthError::Value::invalid_request,
+			"Request was missing the '" + field_name + "' parameter.",
+			_ERROR_DETAILS_
+		);
+	}
+
 	inline Token process(
 		std::optional<std::string> grant_type,
 		std::optional<std::string> client_id,
 		std::optional<std::string> client_secret
 	) override
 	{
+		if (grant_type.value() != "client_credentials")
+		{
+			throw OAuthError(
+				OAuthError::Value::unsupported_grant_type,
+				"Grant type '" + grant_type.value() + "' is not supported.",
+				_ERROR_DETAILS_
+			);
+		}
+
 		auto client = this->_client_service->get_by_id(client_id.value());
+		if (client.is_null())
+		{
+			throw OAuthError(
+				OAuthError::Value::invalid_client,
+				"Client with ID '" + client_id.value() + "' is not registered.",
+				_ERROR_DETAILS_
+			);
+		}
+
 		if (client.client_secret != client_secret.value())
 		{
-			throw IncorrectClientSecretError(client.client_id, _ERROR_DETAILS_);
+			throw OAuthError(
+				OAuthError::Value::invalid_client,
+				"Secret key is incorrect for client with id '" + client.client_id + "'.",
+				_ERROR_DETAILS_
+			);
 		}
 
 		auto now = xw::dt::Datetime::utc_now();
-		auto expires_in = (time_t)(now + this->_jwt_period).timestamp();
 		nlohmann::json claims = {
 			{xw::crypto::jwt::iat, now.timestamp()},
-			{xw::crypto::jwt::exp, expires_in},
+			{xw::crypto::jwt::exp, (time_t)(now + this->_jwt_period).timestamp()},
 			{xw::crypto::jwt::iss, this->_issuer},
 			{xw::crypto::jwt::sub, this->_subject},
 			{"client_id", client.client_id}
-//			{"grant_type", grant_type.value()},
 		};
 		auto access_token = xw::crypto::jwt::sign(this->_signature_algorithm.get(), claims);
-		return {access_token, "Bearer", expires_in};
+		return {access_token, "Bearer", this->_jwt_period.seconds()};
 	}
 
 	inline TokenSerializer& set_signature_algorithm(

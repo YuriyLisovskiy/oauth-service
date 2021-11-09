@@ -4,6 +4,9 @@
 
 #pragma once
 
+// STL
+#include <memory>
+
 // xalwart
 #include <xalwart.base/datetime.h>
 #include <xalwart.crypto/interfaces.h>
@@ -23,6 +26,8 @@ public:
 	}
 
 	std::unique_ptr<xw::http::IResponse> post(xw::http::IRequest* request) const override;
+
+	std::unique_ptr<xw::http::IResponse> dispatch(xw::http::IRequest* request) const override;
 
 	inline TokenController& set_client_service(std::shared_ptr<IClientService> client_service)
 	{
@@ -62,4 +67,6 @@ private:
 	xw::dt::Timedelta _jwt_period;
 	std::string _subject;
 	std::string _issuer;
+
+	void _set_required_headers(xw::http::IResponse* response) const;
 };

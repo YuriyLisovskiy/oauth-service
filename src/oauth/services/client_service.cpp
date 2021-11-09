@@ -82,16 +82,13 @@ std::list<ClientModel> ClientService::list() const
 ClientModel ClientService::get_by_id(const std::string& id) const
 {
 	ClientModel client;
+	client.mark_as_null();
 	this->_repository->wrap([&](auto*)
 	{
 		client = this->_repository->select<ClientModel>()
 			.where(xw::orm::q::c(&ClientModel::client_id) == id)
 		    .first();
 	});
-	if (client.is_null())
-	{
-		throw ClientNotFoundError(id, _ERROR_DETAILS_);
-	}
 
 	return client;
 }

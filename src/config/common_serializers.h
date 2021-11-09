@@ -46,6 +46,10 @@ public:
 	{
 	}
 
+	virtual inline void on_validation_error(const std::string& field_name) const
+	{
+	}
+
 	inline std::tuple<std::optional<Args>...> validate(nlohmann::json data)
 	{
 		struct field_info
@@ -55,7 +59,7 @@ public:
 		};
 
 		std::vector<field_info> ordered_data;
-		xw::util::tuple_for_each(this->fields, [&data, &ordered_data](size_t index, const auto& field)
+		xw::util::tuple_for_each(this->fields, [&data, &ordered_data, this](size_t index, const auto& field)
 		{
 			if (!field.is_valid())
 			{
@@ -76,6 +80,7 @@ public:
 			}
 			else if (field.required)
 			{
+				this->on_validation_error(field.name);
 				throw ValidationError("missing '" + field.name + "' field", _ERROR_DETAILS_);
 			}
 			else
