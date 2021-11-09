@@ -10,11 +10,12 @@
 #include <xalwart.orm/config/yaml.h>
 
 // oauth-service
-#include "./module.h"
-#include "../oauth/module.h"
-#include "../users/module.h"
-#include "./migrations/001_create_client.h"
-#include "./migrations/002_create_users.h"
+#include "../module.h"
+#include "../../oauth/module.h"
+#include "../../users/module.h"
+#include "../migrations/001_create_client.h"
+#include "../migrations/002_create_users.h"
+#include "components/yaml.h"
 
 
 void Settings::register_modules()
@@ -61,10 +62,13 @@ std::unique_ptr<Settings> Settings::load()
 			// and databases.
 			loader->register_standard_components(settings);
 
-			// Other custom components' setup.
+			// Setup components from external libraries.
 			loader->register_component("databases", std::make_unique<xw::orm::config::YAMLDatabasesComponent>(
 				settings->BASE_DIR, settings->DATABASES
 			));
+
+			// Other custom components' setup.
+			loader->register_component("oauth", std::make_unique<YAMLOAuthComponent>(settings->OAUTH));
 		})
 		.load();
 }

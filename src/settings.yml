@@ -32,3 +32,13 @@ ignorable_404_urls:
 limits:
   data_upload_max_memory_size: 20971520
   file_upload_max_memory_size: 104857600
+
+oauth:
+  jwt:
+    subject: 'oauth'
+    issuer: 'oauth-service'
+    period:
+      minutes: 10
+  signer:
+    algorithm: HS256
+    secret_key: 'set in local settings'

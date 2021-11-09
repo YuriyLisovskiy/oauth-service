@@ -9,7 +9,7 @@
 #include <xalwart/conf/application.h>
 
 // oauth-service
-#include "./config/settings.h"
+#include "./config/settings/settings.h"
 
 
 int main(int argc, char** argv)

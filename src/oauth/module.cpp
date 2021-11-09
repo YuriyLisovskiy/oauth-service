@@ -16,6 +16,7 @@
 #include "./commands/client.h"
 #include "./services/client_service.h"
 #include "./controllers/token_controller.h"
+#include "../config/settings/settings.h"
 
 
 OAuthModuleConfig::OAuthModuleConfig(
@@ -34,15 +35,15 @@ void OAuthModuleConfig::configure()
 
 void OAuthModuleConfig::urlpatterns()
 {
-	// TODO: move jwt parameters to settings.
 	this->url_func<TokenController>(R"(token/?)", "token", [this](const auto* settings) -> auto
 	{
-		return TokenController(settings->LOGGER.get())
+		auto* project_settings = (Settings*)settings;
+		return TokenController(project_settings->LOGGER.get())
 			.set_client_service(this->_client_service)
-			.set_signature_algorithm(std::make_shared<xw::crypto::HS256>("secret_key"))
-			.set_jwt_period(xw::dt::Timedelta(7)) // 7 days
-			.set_subject("oauth")
-			.set_issuer("oauth-service");
+			.set_signature_algorithm(project_settings->OAUTH.SIGNER)
+			.set_jwt_period(project_settings->OAUTH.JWT.PERIOD)
+			.set_subject(project_settings->OAUTH.JWT.SUBJECT)
+			.set_issuer(project_settings->OAUTH.JWT.ISSUER);
 	});
 }
 
