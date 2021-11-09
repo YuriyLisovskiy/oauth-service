@@ -85,7 +85,7 @@ public:
 			{"client_id", client.client_id}
 		};
 		auto access_token = xw::crypto::jwt::sign(this->_signature_algorithm.get(), claims);
-		return {access_token, "Bearer", this->_jwt_period.seconds()};
+		return {access_token, "Bearer", (time_t)this->_jwt_period.total_seconds()};
 	}
 
 	inline TokenSerializer& set_signature_algorithm(
