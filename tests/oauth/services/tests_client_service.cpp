@@ -13,7 +13,7 @@
 
 #include "../../../src/oauth/exceptions.h"
 #include "../../../src/oauth/services/client_service.h"
-#include "../../../src/config/migrations/001_create_client.h"
+#include "../../../src/config/migrations/001_create_clients.h"
 
 
 class TestsOAuthServices_ClientService : public ::testing::Test
@@ -27,7 +27,7 @@ protected:
 		this->_backend = std::make_shared<xw::orm::sqlite3::Backend>(1, this->db_file.c_str());
 		this->_backend->create_pool();
 		std::list<std::shared_ptr<xw::orm::db::Migration>> migrations = {
-			std::make_shared<Migration001_CreateClient>(this->_backend.get())
+			std::make_shared<Migration001_CreateClients>(this->_backend.get())
 		};
 		auto executor = xw::orm::db::MigrationExecutor(
 			this->_backend.get(), migrations,

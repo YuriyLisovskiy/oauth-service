@@ -13,7 +13,7 @@
 #include "../module.h"
 #include "../../oauth/module.h"
 #include "../../users/module.h"
-#include "../migrations/001_create_client.h"
+#include "../migrations/001_create_clients.h"
 #include "../migrations/002_create_users.h"
 #include "components/yaml.h"
 
@@ -27,7 +27,7 @@ void Settings::register_modules()
 
 void Settings::register_migrations()
 {
-	this->migration<Migration001_CreateClient>();
+	this->migration<Migration001_CreateClients>();
 	this->migration<Migration002_CreateUsers>();
 }
 

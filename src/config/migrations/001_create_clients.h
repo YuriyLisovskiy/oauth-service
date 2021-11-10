@@ -12,14 +12,14 @@
 #include <xalwart.orm/db/migration.h>
 
 
-class Migration001_CreateClient : public xw::orm::db::Migration
+class Migration001_CreateClients : public xw::orm::db::Migration
 {
 public:
-	inline explicit Migration001_CreateClient(auto* backend)
-		: xw::orm::db::Migration(backend, "001_create_client", true)
+	inline explicit Migration001_CreateClients(auto* backend)
+		: xw::orm::db::Migration(backend, "001_create_clients", true)
 	{
 		this->create_table(
-			"oauth_client",
+			"oauth_clients",
 			[](auto& table)
 			{
 				table.template column<std::string>(

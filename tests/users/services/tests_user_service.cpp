@@ -12,7 +12,7 @@
 
 #include "../../../src/users/services/user_service.h"
 #include "../../../src/users/services/exceptions.h"
-#include "../../../src/config/migrations/001_create_client.h"
+#include "../../../src/config/migrations/001_create_clients.h"
 #include "../../../src/config/migrations/002_create_users.h"
 
 
@@ -27,7 +27,7 @@ protected:
 		this->_backend = std::make_shared<xw::orm::sqlite3::Backend>(1, this->db_file.c_str());
 		this->_backend->create_pool();
 		std::list<std::shared_ptr<xw::orm::db::Migration>> migrations = {
-			std::make_shared<Migration001_CreateClient>(this->_backend.get()),
+			std::make_shared<Migration001_CreateClients>(this->_backend.get()),
 			std::make_shared<Migration002_CreateUsers>(this->_backend.get())
 		};
 		auto executor = xw::orm::db::MigrationExecutor(
