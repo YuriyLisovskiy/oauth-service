@@ -16,7 +16,6 @@
 #include "../services/interfaces.h"
 
 
-// TODO: tests required
 class TokenController : public xw::ctrl::Controller<>
 {
 public:
