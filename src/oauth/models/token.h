@@ -11,7 +11,6 @@
 #include <xalwart.base/interfaces/base.h>
 
 
-// TODO: tests required
 struct Token : public xw::IJsonSerializable
 {
 	std::string access_token;
