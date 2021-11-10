@@ -138,7 +138,7 @@ public:
 	{
 	}
 
-	CustomModel process(std::optional<int> id) override
+	CustomModel process(const std::optional<int>& id) override
 	{
 		return {id.value()};
 	}

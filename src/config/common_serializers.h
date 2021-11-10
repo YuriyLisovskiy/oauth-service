@@ -134,9 +134,9 @@ public:
 		auto validated_data = this->validate(data);
 		return std::apply(
 			[this](std::optional<Args>... a) -> auto { return this->process(a...); },
-			std::forward<std::tuple<std::optional<Args>...>>(validated_data)
+			std::forward<std::tuple<const std::optional<Args>&...>>(validated_data)
 		);
 	}
 
-	virtual ModelType process(std::optional<Args>...) = 0;
+	virtual ModelType process(const std::optional<Args>&...) = 0;
 };

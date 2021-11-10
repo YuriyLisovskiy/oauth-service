@@ -29,7 +29,7 @@ public:
 	}
 
 	inline UserModel process(
-		std::optional<std::string> email, std::optional<std::string> raw_password
+		const std::optional<std::string>& email, const std::optional<std::string>& raw_password
 	) override
 	{
 		return this->_user_service->create(email.value(), raw_password.value());
@@ -55,8 +55,9 @@ public:
 	}
 
 	inline UserModel process(
-		std::optional<long long int> id,
-		std::optional<std::string> email, std::optional<std::string> raw_password
+		const std::optional<long long int>& id,
+		const std::optional<std::string>& email,
+		const std::optional<std::string>& raw_password
 	) override
 	{
 		return this->_user_service->update(id.value(), email, raw_password);

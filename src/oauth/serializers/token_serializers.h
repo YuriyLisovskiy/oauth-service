@@ -18,11 +18,10 @@
 #include "../exceptions.h"
 
 
-// TODO: tests required
-class TokenSerializer : public ModelSerializer<Token, std::string, std::string, std::string>
+class CreateTokenSerializer : public ModelSerializer<Token, std::string, std::string, std::string>
 {
 public:
-	explicit inline TokenSerializer(std::shared_ptr<IClientService> client_service) :
+	explicit inline CreateTokenSerializer(std::shared_ptr<IClientService> client_service) :
 		ModelSerializer(
 			{.name="grant_type", .required=true},
 			{.name="client_id", .required=true},
@@ -43,9 +42,9 @@ public:
 	}
 
 	inline Token process(
-		std::optional<std::string> grant_type,
-		std::optional<std::string> client_id,
-		std::optional<std::string> client_secret
+		const std::optional<std::string>& grant_type,
+		const std::optional<std::string>& client_id,
+		const std::optional<std::string>& client_secret
 	) override
 	{
 		if (grant_type.value() != "client_credentials")
@@ -88,7 +87,7 @@ public:
 		return {access_token, "Bearer", (time_t)this->_jwt_period.total_seconds()};
 	}
 
-	inline TokenSerializer& set_signature_algorithm(
+	inline CreateTokenSerializer& set_signature_algorithm(
 		const std::shared_ptr<xw::crypto::ISignatureAlgorithm>& signature_algorithm
 	)
 	{
@@ -96,19 +95,19 @@ public:
 		return *this;
 	}
 
-	inline TokenSerializer& set_jwt_period(const xw::dt::Timedelta& jwt_period)
+	inline CreateTokenSerializer& set_jwt_period(const xw::dt::Timedelta& jwt_period)
 	{
 		this->_jwt_period = jwt_period;
 		return *this;
 	}
 
-	inline TokenSerializer& set_subject(const std::string& subject)
+	inline CreateTokenSerializer& set_subject(const std::string& subject)
 	{
 		this->_subject = subject;
 		return *this;
 	}
 
-	inline TokenSerializer& set_issuer(const std::string& issuer)
+	inline CreateTokenSerializer& set_issuer(const std::string& issuer)
 	{
 		this->_issuer = issuer;
 		return *this;

@@ -8,7 +8,7 @@
 #include <xalwart/http/headers.h>
 
 // oauth-service
-#include "../serializers/token_serializer.h"
+#include "../serializers/token_serializers.h"
 
 
 std::unique_ptr<xw::http::IResponse> TokenController::post(xw::http::IRequest* request) const
@@ -19,7 +19,7 @@ std::unique_ptr<xw::http::IResponse> TokenController::post(xw::http::IRequest* r
 		throw xw::http::exc::BadRequest("request data is null", _ERROR_DETAILS_);
 	}
 
-	auto serializer = TokenSerializer(this->_client_service)
+	auto serializer = CreateTokenSerializer(this->_client_service)
 		.set_signature_algorithm(this->_signature_algorithm)
 		.set_jwt_period(this->_jwt_period)
 		.set_subject(this->_subject)
