@@ -21,7 +21,7 @@ public:
 	xw::dt::Datetime created_at;
 	xw::dt::Datetime updated_at;
 
-	static constexpr const char* meta_table_name = "oauth_client";
+	static constexpr const char* meta_table_name = "oauth_clients";
 	static constexpr bool meta_omit_pk = false;
 
 	inline static const std::tuple meta_columns = {

@@ -19,6 +19,9 @@ public:
 	virtual std::list<ClientModel> list() const = 0;
 
 	[[nodiscard]]
+	virtual ClientModel get_by_id(const std::string& id) const = 0;
+
+	[[nodiscard]]
 	virtual ClientModel create(std::string id) const = 0;
 
 	[[nodiscard]]
