@@ -6,7 +6,6 @@ COPY CMakeLists.txt ./
 COPY LICENSE ./
 COPY README.md ./
 COPY ./src ./src
-COPY scripts/deploy/docker ./
 
 RUN mkdir -p ./build && \
     cd ./build || exit 1 && \
@@ -27,6 +26,6 @@ RUN rm -rf ./CMakeLists.txt ./src ./build
 
 CMD ./application start-server --bind=0.0.0.0:$PORT \
                                --timeout-seconds=5 \
-                               --retries=1 \
+                               --retries=5 \
                                --workers=5 \
                                --colors=false
