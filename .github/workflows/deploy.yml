@@ -1,0 +1,46 @@
+name: Deploy
+on:
+  workflow_run:
+    workflows:
+      - Test
+    branches:
+      - master
+    types:
+      - completed
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate local settings
+        run: |
+          bash ./scripts/deploy/create_local_settings.sh \
+               ${{ secrets.APP_SECRET_KEY }} \
+               ${{ secrets.APP_DB_NAME }} \
+               ${{ secrets.APP_DB_USER }} \
+               ${{ secrets.APP_DB_PASSWORD }} \
+               ${{ secrets.APP_DB_HOST }} \
+               ${{ secrets.APP_DB_PORT }} \
+               ${{ secrets.APP_DB_CONNECTIONS }} \
+               ${{ secrets.APP_OAUTH_JWT_SUBJECT }} \
+               ${{ secrets.APP_OAUTH_JWT_ISSUER }} \
+               ${{ secrets.APP_OAUTH_JWT_PERIOD_MIN }} \
+               ${{ secrets.APP_OAUTH_JWT_PERIOD_DAYS }} \
+               ${{ secrets.APP_OAUTH_SIGNER_ALGORITHM }} \
+               ${{ secrets.APP_OAUTH_SIGNER_SECRET_KEY }} \
+               > ./src/settings.local.yaml
+      - name: Build the image
+        run: |
+          docker build -t registry.heroku.com/${{ secrets.HEROKU_APP }}/web .
+      - name: Migrate the default datatabse
+        run: |
+          sudo docker run -i registry.heroku.com/${{ secrets.HEROKU_APP }}/web \
+                             bash ./application migrate --database=default --colors=false
+      - name: Deploy the image
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku container:login
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP }}/web
+          heroku container:release -a ${{ secrets.HEROKU_APP }} web

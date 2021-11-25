@@ -1,0 +1,12 @@
+FROM xalwart/gtest:1.11.0-clang-10-alpine-3.13
+
+FROM xalwart/framework:0.0.0-alpine
+
+WORKDIR /app
+
+COPY ./src ./src
+COPY ./tests ./tests
+COPY ./CMakeLists.txt .
+COPY ./scripts/test.sh ./scripts/test.sh
+
+CMD ["bash"]
