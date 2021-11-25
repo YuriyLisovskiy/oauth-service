@@ -43,10 +43,11 @@ build
 
 # Xalwart project
 media/
-settings.local.yaml
+settings.local.yml
 
 # Other
 db.sqlite3
+framework*
 
 # macOS files
 *.DS_Store

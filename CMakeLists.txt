@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -45,15 +45,20 @@ if (NOT APPLE)
     target_link_libraries(${BINARY} PUBLIC stdc++fs)
 endif()
 
-option(XW_USE_SQLITE3 "Link sqlite3 library and add compile XW_USE_SQLITE3 compile definition." OFF)
+option(XW_USE_SQLITE3 "Search for SQLite3." OFF)
 if (${XW_USE_SQLITE3})
-    # Search for sqlite3
-    find_library(
-        SQLITE3 sqlite3 REQUIRED
-        PATHS ${DEFAULT_INCLUDE_PATHS}
-    )
-    target_link_libraries(${BINARY} PUBLIC ${SQLITE3})
+    find_package(SQLite3 3 REQUIRED)
+    include_directories(${SQLite3_INCLUDE_DIRS})
+    target_link_libraries(${BINARY} PUBLIC ${SQLite3_LIBRARIES})
     add_compile_definitions(USE_SQLITE3)
+endif()
+
+option(XW_USE_POSTGRESQL "Search for PostgreSQL." OFF)
+if (${XW_USE_POSTGRESQL})
+    find_package(PostgreSQL 12 REQUIRED)
+    target_link_libraries(${BINARY} PUBLIC ${PostgreSQL_LIBRARIES})
+    include_directories(${PostgreSQL_INCLUDE_DIRS})
+    add_compile_definitions(USE_POSTGRESQL)
 endif()
 
 set(XALWART_LIBRARIES)
@@ -71,11 +76,7 @@ find_xalwart_library(.crypto)
 find_xalwart_library(.orm)
 find_xalwart_library("")
 
-target_link_libraries(
-    ${BINARY} PUBLIC
-        ${OPENSSL_LIBRARIES}
-        ${XALWART_LIBRARIES}
-)
+target_link_libraries(${BINARY} PUBLIC ${OPENSSL_LIBRARIES} ${XALWART_LIBRARIES})
 
 option(CONFIGURE_TESTS "Configure tests." OFF)
 if (${CONFIGURE_TESTS})
