@@ -15,7 +15,7 @@
 class Migration001_CreateClients : public xw::orm::db::Migration
 {
 public:
-	inline explicit Migration001_CreateClients(auto* backend)
+	inline explicit Migration001_CreateClients(xw::orm::IBackend* backend)
 		: xw::orm::db::Migration(backend, "001_create_clients", true)
 	{
 		this->create_table(
@@ -23,7 +23,7 @@ public:
 			[](auto& table)
 			{
 				table.template column<std::string>(
-					"client_id", {.primary_key=true, .max_len=255, .unique=true, .null=false}
+					"client_id", {.max_len=255, .null=false, .primary_key=true, .unique=true}
 				);
 				table.template column<std::string>("client_secret", {.max_len=64, .null=false});
 				table.template column<xw::dt::Datetime>("created_at", {.null=false});

@@ -15,7 +15,7 @@
 class Migration002_CreateUsers : public xw::orm::db::Migration
 {
 public:
-	inline explicit Migration002_CreateUsers(auto* backend)
+	inline explicit Migration002_CreateUsers(xw::orm::IBackend* backend)
 		: xw::orm::db::Migration(backend, "002_create_users", true)
 	{
 		this->create_table(
@@ -23,7 +23,7 @@ public:
 			[](auto& table)
 			{
 				table.template column<long long int>(
-					"id", {.primary_key=true, .autoincrement=true, .unique=true, .null=false}
+					"id", {.null=false, .primary_key=true, .unique=true, .autoincrement=true}
 				);
 				table.template column<std::string>("email", {.max_len=320, .null=false});
 				table.template column<std::string>("password_hash", {.max_len=64, .null=false});
