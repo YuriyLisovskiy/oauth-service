@@ -4,6 +4,9 @@ FROM xalwart/framework:0.0.0-alpine
 
 WORKDIR /app
 
+# Copy google test framework
+COPY --from=0 /usr/local /usr/local
+
 COPY ./src ./src
 COPY ./tests ./tests
 COPY ./CMakeLists.txt .
