@@ -36,7 +36,7 @@ jobs:
       - name: Migrate the default datatabse
         run: |
           sudo docker run -i registry.heroku.com/${{ secrets.HEROKU_APP }}/web \
-                             bash ./application migrate --database=default --colors=false
+                             ./application migrate --database=default --colors=false
       - name: Deploy the image
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
