@@ -29,7 +29,7 @@ jobs:
                "${{ secrets.APP_OAUTH_JWT_PERIOD_DAYS }}" \
                "${{ secrets.APP_OAUTH_SIGNER_ALGORITHM }}" \
                "${{ secrets.APP_OAUTH_SIGNER_SECRET_KEY }}" \
-               > ./src/settings.local.yaml
+               > ./settings.local.yml
       - name: Build the image
         run: |
           docker build -t registry.heroku.com/${{ secrets.HEROKU_APP }}/web .

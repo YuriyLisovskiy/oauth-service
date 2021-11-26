@@ -17,7 +17,7 @@ middleware:
   - xw::middleware::XFrameOptions
 
 databases:
-  - name: default
+  - instance: default
     dbms: sqlite3
     file: db.sqlite3
     connections: 3
