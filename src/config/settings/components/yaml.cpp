@@ -67,6 +67,10 @@ YAMLOAuthComponent::YAMLOAuthComponent(OAuthConfig& config) : _config(config)
 	jwt_component->register_component(
 		"period", std::make_unique<YAMLTimedeltaComponent>(this->_config.JWT.PERIOD)
 	);
+	jwt_component->register_component(
+		"token_type",
+		std::make_unique<xw::config::YAMLScalarComponent>(this->_config.JWT.TOKEN_TYPE)
+	);
 	this->register_component("jwt", std::move(jwt_component));
 
 	this->register_component(

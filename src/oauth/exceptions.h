@@ -87,11 +87,13 @@ public:
 	};
 
 	explicit inline OAuthError(
-		Value value, const std::string& error_description,
-		int line=0, const char* function="", const char* file=""
-	) : xw::http::exc::HttpError(
-		value.to_status_code(), error_description, line, function, file
+		Value value,
+		const std::string& error_description,
+		int line=0,
+		const char* function="",
+		const char* file=""
 	)
+		: xw::http::exc::HttpError(value.to_status_code(), error_description, line, function, file)
 	{
 		this->_value = value;
 	}
@@ -111,9 +113,8 @@ class ClientNotFoundError : public xw::http::exc::NotFound
 public:
 	explicit inline ClientNotFoundError(
 		const std::string& id, int line=0, const char* function="", const char* file=""
-	) : xw::http::exc::NotFound(
-		"Client with id '" + id + "' is not found", line, function, file
-	)
+	) :
+		xw::http::exc::NotFound("Client with id '" + id + "' is not found", line, function, file)
 	{
 	}
 };
@@ -123,9 +124,8 @@ class ClientAlreadyExistsError : public xw::http::exc::NotFound
 public:
 	explicit inline ClientAlreadyExistsError(
 		const std::string& id, int line=0, const char* function="", const char* file=""
-	) : xw::http::exc::NotFound(
-		"Client with id '" + id + "' already exists.", line, function, file
-	)
+	) :
+		xw::http::exc::NotFound("Client with id '" + id + "' already exists.", line, function, file)
 	{
 	}
 };

@@ -32,6 +32,7 @@ protected:
 		this->serializer = std::make_shared<CreateTokenSerializer>(this->client_service_mock);
 		this->serializer->set_issuer(this->issuer)
 			.set_subject(this->subject)
+			.set_token_type(this->token_type)
 			.set_jwt_period(this->period)
 			.set_signature_algorithm(this->signer);
 	}

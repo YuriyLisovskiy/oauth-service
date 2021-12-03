@@ -26,9 +26,6 @@ logger:
   use_colors: true
   levels: '*'
 
-ignorable_404_urls:
-  - /favicon.ico
-
 limits:
   data_upload_max_memory_size: 20971520
   file_upload_max_memory_size: 104857600
@@ -37,6 +34,7 @@ oauth:
   jwt:
     subject: 'oauth'
     issuer: 'oauth-service'
+    token_type: 'Bearer'
     period:
       minutes: 10
   signer:

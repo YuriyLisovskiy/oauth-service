@@ -8,17 +8,13 @@
 #include "../serializers/user_serializers.h"
 
 
-std::unique_ptr<xw::http::IResponse> UserController::get(
-	xw::http::IRequest* request, long long int id
-) const
+std::unique_ptr<xw::http::IResponse> UserController::get(xw::http::IRequest* request, long long id) const
 {
-	auto user = this->_user_service->get_by_id(id);
+	auto user = this->user_service->get_by_id(id);
 	return std::make_unique<xw::http::JsonResponse>(user.to_json(), 200);
 }
 
-std::unique_ptr<xw::http::IResponse> UserController::put(
-	xw::http::IRequest* request, long long int id
-) const
+std::unique_ptr<xw::http::IResponse> UserController::put(xw::http::IRequest* request, long long id) const
 {
 	auto data = request->json();
 	if (data.is_null())
@@ -27,15 +23,13 @@ std::unique_ptr<xw::http::IResponse> UserController::put(
 	}
 
 	data["id"] = id;
-	UpdateUserSerializer serializer(this->_user_service);
+	UpdateUserSerializer serializer(this->user_service);
 	auto updated_user = serializer.save(data);
 	return std::make_unique<xw::http::JsonResponse>(updated_user.to_json(), 200);
 }
 
-std::unique_ptr<xw::http::IResponse> UserController::delete_(
-	xw::http::IRequest* request, long long int id
-) const
+std::unique_ptr<xw::http::IResponse> UserController::delete_(xw::http::IRequest* request, long long id) const
 {
-	auto user = this->_user_service->remove(id);
+	auto user = this->user_service->remove(id);
 	return std::make_unique<xw::http::JsonResponse>(user.to_json(), 200);
 }

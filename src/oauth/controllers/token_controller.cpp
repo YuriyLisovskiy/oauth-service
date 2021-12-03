@@ -23,7 +23,8 @@ std::unique_ptr<xw::http::IResponse> TokenController::post(xw::http::IRequest* r
 		.set_signature_algorithm(this->_signature_algorithm)
 		.set_jwt_period(this->_jwt_period)
 		.set_subject(this->_subject)
-		.set_issuer(this->_issuer);
+		.set_issuer(this->_issuer)
+		.set_token_type(this->_token_type);
 	auto created_token = serializer.save(data);
 	auto response = std::make_unique<xw::http::JsonResponse>(created_token.to_json(), 201);
 	this->_set_required_headers(response.get());

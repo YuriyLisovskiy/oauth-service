@@ -60,12 +60,19 @@ public:
 		return *this;
 	}
 
+	inline TokenController& set_token_type(std::string token_type)
+	{
+		this->_token_type = std::move(token_type);
+		return *this;
+	}
+
 private:
 	std::shared_ptr<IClientService> _client_service;
 	std::shared_ptr<xw::crypto::ISignatureAlgorithm> _signature_algorithm;
 	xw::dt::Timedelta _jwt_period;
 	std::string _subject;
 	std::string _issuer;
+	std::string _token_type;
 
 	void _set_required_headers(xw::http::IResponse* response) const;
 };

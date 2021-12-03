@@ -9,26 +9,57 @@
 #include "../../../src/users/controllers/users_controller.h"
 
 
+class UsersControllerToTest : public UsersController
+{
+public:
+	explicit inline UsersControllerToTest(const xw::ILogger* logger, const OAuthConfig& oauth_config) :
+		UsersController(logger, oauth_config)
+	{
+	}
+
+protected:
+	[[nodiscard]]
+	inline bool client_exists(const std::string&) const override
+	{
+		return true;
+	}
+};
+
 class TestsUsersControllers_UsersController : public ::testing::Test
 {
 protected:
 	std::shared_ptr<UserServiceMock> user_service_mock = nullptr;
 	HttpRequestMock request_mock;
+	std::string token;
+	OAuthConfig oauth_config;
 
 	void SetUp() override
 	{
 		this->user_service_mock = std::make_shared<UserServiceMock>();
+
+		this->oauth_config.JWT.TOKEN_TYPE = "Bearer";
+		this->oauth_config.JWT.ISSUER = "test";
+		this->oauth_config.JWT.SUBJECT = "test";
+		this->oauth_config.JWT.PERIOD = xw::dt::Timedelta(0, 30);
+		this->oauth_config.SIGNER = xw::crypto::get_hs_signer("HS256", "test-secret");
+
+		auto now = xw::dt::Datetime::utc_now();
+		nlohmann::json claims = {
+			{xw::crypto::jwt::iat, now.timestamp()},
+			{xw::crypto::jwt::exp, (time_t)(now + this->oauth_config.JWT.PERIOD).timestamp()},
+			{xw::crypto::jwt::iss, this->oauth_config.JWT.ISSUER},
+			{xw::crypto::jwt::sub, this->oauth_config.JWT.SUBJECT},
+			{xw::crypto::jwt::aud, "some-id"}
+		};
+		this->token = xw::crypto::jwt::sign(this->oauth_config.SIGNER.get(), claims);
 	}
 };
 
-TEST_F(TestsUsersControllers_UsersController, contructor_ThrowsNullPointerExceptionOnNullptrService)
-{
-	ASSERT_THROW(UsersController(nullptr, nullptr), xw::NullPointerException);
-}
-
 TEST_F(TestsUsersControllers_UsersController, get_EmptyUsersList)
 {
-	UsersController controller(nullptr, this->user_service_mock);
+	UsersControllerToTest controller(nullptr, this->oauth_config);
+	controller.set_user_service(this->user_service_mock);
+	this->request_mock.set_header("Authorization", this->oauth_config.JWT.TOKEN_TYPE + " " + this->token);
 	auto response = controller.get(&this->request_mock);
 	auto json_content = nlohmann::json::parse(response->get_content());
 
@@ -46,7 +77,9 @@ TEST_F(TestsUsersControllers_UsersController, get_NonEmptyUsersList)
 		UserModel("email2@gmail.com", now, now)
 	};
 	this->user_service_mock->set_data(users_data);
-	UsersController controller(nullptr, this->user_service_mock);
+	UsersControllerToTest controller(nullptr, this->oauth_config);
+	controller.set_user_service(this->user_service_mock);
+	this->request_mock.set_header("Authorization", this->oauth_config.JWT.TOKEN_TYPE + " " + this->token);
 	auto response = controller.get(&this->request_mock);
 	auto json_content = nlohmann::json::parse(response->get_content());
 
@@ -69,7 +102,9 @@ TEST_F(TestsUsersControllers_UsersController, get_NonEmptyUsersList)
 
 TEST_F(TestsUsersControllers_UsersController, post_RequestJsonIsNullptr)
 {
-	UsersController controller(nullptr, this->user_service_mock);
+	UsersControllerToTest controller(nullptr, this->oauth_config);
+	controller.set_user_service(this->user_service_mock);
+	this->request_mock.set_header("Authorization", this->oauth_config.JWT.TOKEN_TYPE + " " + this->token);
 	this->request_mock.set_json(nullptr);
 
 	ASSERT_THROW(auto _ = controller.post(&this->request_mock), xw::http::exc::BadRequest);
@@ -80,7 +115,9 @@ TEST_F(TestsUsersControllers_UsersController, post_Success)
 	auto now = xw::dt::Datetime::now(std::make_shared<xw::dt::Timezone>(xw::dt::Timezone::UTC));
 	auto user = UserModel("email@gmail.com", now, now);
 	this->user_service_mock->set_data(std::list{user});
-	UsersController controller(nullptr, this->user_service_mock);
+	UsersControllerToTest controller(nullptr, this->oauth_config);
+	controller.set_user_service(this->user_service_mock);
+	this->request_mock.set_header("Authorization", this->oauth_config.JWT.TOKEN_TYPE + " " + this->token);
 	this->request_mock.set_json({
 		{"email", user.email},
 		{"raw_password", "super-password"}

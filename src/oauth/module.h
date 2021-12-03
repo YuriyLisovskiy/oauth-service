@@ -18,7 +18,10 @@
 class OAuthModuleConfig : public xw::conf::ModuleConfig
 {
 public:
-	explicit OAuthModuleConfig(const std::string& registration_name, xw::conf::Settings* settings);
+	explicit inline OAuthModuleConfig(const std::string& registration_name, xw::conf::Settings* settings) :
+		xw::conf::ModuleConfig(registration_name, settings)
+	{
+	}
 
 	void configure() override;
 

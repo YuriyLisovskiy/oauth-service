@@ -53,8 +53,7 @@ public:
 		if (!data.is_object())
 		{
 			throw ValidationError(
-				"JSON object is required, got " + std::string(data.type_name()),
-				_ERROR_DETAILS_
+				"JSON object is required, got " + std::string(data.type_name()), _ERROR_DETAILS_
 			);
 		}
 

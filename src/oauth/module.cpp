@@ -8,8 +8,6 @@
 #include <memory>
 
 // xalwart
-#include <xalwart.base/datetime.h>
-#include <xalwart.crypto/hmac.h>
 #include <xalwart.orm/repository.h>
 
 // oauth-service
@@ -18,12 +16,6 @@
 #include "./controllers/token_controller.h"
 #include "../config/settings/settings.h"
 
-
-OAuthModuleConfig::OAuthModuleConfig(
-	const std::string& registration_name, xw::conf::Settings* settings
-) : xw::conf::ModuleConfig(registration_name, settings)
-{
-}
 
 void OAuthModuleConfig::configure()
 {
@@ -43,7 +35,8 @@ void OAuthModuleConfig::urlpatterns()
 			.set_signature_algorithm(project_settings->OAUTH.SIGNER)
 			.set_jwt_period(project_settings->OAUTH.JWT.PERIOD)
 			.set_subject(project_settings->OAUTH.JWT.SUBJECT)
-			.set_issuer(project_settings->OAUTH.JWT.ISSUER);
+			.set_issuer(project_settings->OAUTH.JWT.ISSUER)
+			.set_token_type(project_settings->OAUTH.JWT.TOKEN_TYPE);
 	});
 }
 

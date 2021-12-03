@@ -39,8 +39,7 @@ private:
 	std::shared_ptr<IUserService> _user_service;
 };
 
-class UpdateUserSerializer :
-	public ModelSerializer<UserModel, long long int, std::string, std::string>
+class UpdateUserSerializer : public ModelSerializer<UserModel, long long int, std::string, std::string>
 {
 public:
 	explicit inline UpdateUserSerializer(std::shared_ptr<IUserService> user_service) :

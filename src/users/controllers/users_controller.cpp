@@ -10,7 +10,7 @@
 
 std::unique_ptr<xw::http::IResponse> UsersController::get(xw::http::IRequest* request) const
 {
-	auto user_models = this->_user_service->get_all();
+	auto user_models = this->user_service->get_all();
 	auto users = nlohmann::json::array();
 	for (const auto& user : user_models)
 	{
@@ -28,7 +28,7 @@ std::unique_ptr<xw::http::IResponse> UsersController::post(xw::http::IRequest* r
 		throw xw::http::exc::BadRequest("request data is null", _ERROR_DETAILS_);
 	}
 
-	CreateUserSerializer serializer(this->_user_service);
+	CreateUserSerializer serializer(this->user_service);
 	auto created_user = serializer.save(data);
 	return std::make_unique<xw::http::JsonResponse>(created_user.to_json(), 201);
 }

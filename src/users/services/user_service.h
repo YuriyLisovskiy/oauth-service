@@ -40,8 +40,7 @@ public:
 
 	[[nodiscard]]
 	UserModel update(
-		long long int id,
-		const std::optional<std::string>& email, const std::optional<std::string>& raw_password
+		long long id, const std::optional<std::string>& email, const std::optional<std::string>& raw_password
 	) const override;
 
 	[[nodiscard]]
