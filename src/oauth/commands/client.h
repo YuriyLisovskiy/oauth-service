@@ -21,10 +21,13 @@ class ClientSubcommand : public xw::cmd::Command
 {
 public:
 	inline explicit ClientSubcommand(
-		const std::string& cmd_name, const std::string& help,
+		const std::string& cmd_name,
+		const std::string& help,
 		const std::shared_ptr<xw::ILogger>& logger,
-		std::string extra_client_id_usage, std::shared_ptr<IClientService> client_service
-	) : xw::cmd::Command(cmd_name, help, logger)
+		std::string extra_client_id_usage,
+		std::shared_ptr<IClientService> client_service
+	)
+		: xw::cmd::Command(cmd_name, help, logger)
 	{
 		xw::require_non_null(client_service.get(), "client_service is nullptr", _ERROR_DETAILS_);
 		this->client_service = std::move(client_service);
@@ -49,12 +52,13 @@ class NewClientCommand final : public ClientSubcommand
 {
 public:
 	inline explicit NewClientCommand(
-		const std::shared_ptr<xw::ILogger>& logger,
-		std::shared_ptr<IClientService> client_service
+		const std::shared_ptr<xw::ILogger>& logger, std::shared_ptr<IClientService> client_service
 	) :
 		ClientSubcommand(
-			"new", "Creates service client", logger,
-			"if empty, uuid4 will be generated", std::move(client_service)
+			"new", "Creates service client",
+			logger,
+			"if empty, uuid4 will be generated",
+			std::move(client_service)
 		)
 	{
 	}
@@ -70,9 +74,7 @@ public:
 		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) :
-		ClientSubcommand(
-			"list", "Prints all service clients", logger, "", std::move(client_service)
-		)
+		ClientSubcommand("list", "Prints all service clients", logger, "", std::move(client_service))
 	{
 	}
 
@@ -88,8 +90,7 @@ public:
 		std::shared_ptr<IClientService> client_service
 	) :
 		ClientSubcommand(
-			"update", "Regenerates secret key of service client", logger,
-			"", std::move(client_service)
+			"update", "Regenerates secret key of service client", logger, "", std::move(client_service)
 		)
 	{
 	}
@@ -105,9 +106,7 @@ public:
 		const std::shared_ptr<xw::ILogger>& logger,
 		std::shared_ptr<IClientService> client_service
 	) :
-		ClientSubcommand(
-			"delete", "Deletes service client", logger, "", std::move(client_service)
-		)
+		ClientSubcommand("delete", "Deletes service client", logger, "", std::move(client_service))
 	{
 	}
 
@@ -119,8 +118,7 @@ class ClientCommand final : public xw::cmd::Command
 {
 public:
 	explicit inline ClientCommand(
-		const std::shared_ptr<xw::ILogger>& logger,
-		std::shared_ptr<IClientService> client_service
+		const std::shared_ptr<xw::ILogger>& logger, std::shared_ptr<IClientService> client_service
 	) : xw::cmd::Command("client", "Lists, creates, deletes and updates service clients", logger)
 	{
 		this->add_subcommand(std::make_shared<NewClientCommand>(logger, client_service));

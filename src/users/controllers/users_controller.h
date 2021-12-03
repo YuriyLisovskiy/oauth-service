@@ -4,29 +4,30 @@
 
 #pragma once
 
-// xalwart
-#include <xalwart/controllers/controller.h>
-
 // oauth-service
-#include "../services/interfaces.h"
+#include "../mixins.h"
+#include "../../config/common_controllers.h"
+#include "../../oauth/mixins.h"
 
 
-class UsersController : public xw::ctrl::Controller<>
+class UsersController : public JWTAuthRequiredController<>,
+                        public UserServiceMixin,
+                        public ClientServiceMixin
 {
 public:
-	explicit inline UsersController(
-		const xw::ILogger* logger, std::shared_ptr<IUserService> user_service
-	) :
-		xw::ctrl::Controller<>({"get", "post"}, logger)
+	explicit inline UsersController(const xw::ILogger* logger, const OAuthConfig& oauth_config) :
+		JWTAuthRequiredController<>({"get", "post"}, logger, oauth_config)
 	{
-		this->_user_service = std::move(user_service);
-		xw::require_non_null(this->_user_service.get(), "'user_service' is nullptr", _ERROR_DETAILS_);
 	}
 
 	std::unique_ptr<xw::http::IResponse> get(xw::http::IRequest* request) const override;
 
 	std::unique_ptr<xw::http::IResponse> post(xw::http::IRequest* request) const override;
 
-private:
-	std::shared_ptr<IUserService> _user_service = nullptr;
+protected:
+	[[nodiscard]]
+	bool client_exists(const std::string& id) const override
+	{
+		return !this->client_service->get_by_id(id).is_null();
+	}
 };

@@ -28,6 +28,7 @@ protected:
 		this->controller = std::make_shared<TokenController>(nullptr);
 		controller->set_issuer("test-issuer")
 			.set_subject("test-subject")
+			.set_token_type("Bearer")
 			.set_jwt_period(this->exp_period)
 			.set_client_service(this->client_service_mock)
 			.set_signature_algorithm(std::make_shared<xw::crypto::HS256>("secret-key"));

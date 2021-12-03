@@ -19,9 +19,7 @@ int main(int argc, char** argv)
 	try
 	{
 		settings = Settings::load();
-		xw::conf::Application(settings.get())
-			.configure()
-			.execute(argc, argv);
+		xw::conf::Application(settings.get()).configure().execute(argc, argv);
 	}
 	catch (const xw::ImproperlyConfigured& exc)
 	{

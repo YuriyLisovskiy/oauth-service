@@ -81,10 +81,10 @@ public:
 			{xw::crypto::jwt::exp, (time_t)(now + this->_jwt_period).timestamp()},
 			{xw::crypto::jwt::iss, this->_issuer},
 			{xw::crypto::jwt::sub, this->_subject},
-			{"client_id", client.client_id}
+			{xw::crypto::jwt::aud, client.client_id}
 		};
 		auto access_token = xw::crypto::jwt::sign(this->_signature_algorithm.get(), claims);
-		return {access_token, "Bearer", (time_t)this->_jwt_period.total_seconds()};
+		return {access_token, this->_token_type, (time_t)this->_jwt_period.total_seconds()};
 	}
 
 	inline CreateTokenSerializer& set_signature_algorithm(
@@ -113,10 +113,17 @@ public:
 		return *this;
 	}
 
+	inline CreateTokenSerializer& set_token_type(const std::string& token_type)
+	{
+		this->_token_type = token_type;
+		return *this;
+	}
+
 private:
 	std::shared_ptr<IClientService> _client_service;
 	std::shared_ptr<xw::crypto::ISignatureAlgorithm> _signature_algorithm;
 	xw::dt::Timedelta _jwt_period;
 	std::string _subject;
 	std::string _issuer;
+	std::string _token_type;
 };

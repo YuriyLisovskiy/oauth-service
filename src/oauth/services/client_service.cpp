@@ -155,9 +155,7 @@ ClientModel ClientService::update(const std::string& id) const
 
 		client.client_secret = _generate_random_alphanum_string(64);
 		client.updated_at = xw::dt::Datetime::now(this->_timezone);
-		this->_repository->update<ClientModel>()
-		    .model(client)
-		    .commit_one();
+		this->_repository->update<ClientModel>().model(client).commit_one();
 	});
 	return client;
 }

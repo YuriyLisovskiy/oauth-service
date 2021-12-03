@@ -14,7 +14,8 @@
 #include <xalwart.crypto/digest.h>
 
 
-class UserModel : public xw::orm::db::Model, public xw::IJsonSerializable
+class UserModel : public xw::orm::db::Model,
+				  public xw::IJsonSerializable
 {
 private:
 	std::string _password_hash;

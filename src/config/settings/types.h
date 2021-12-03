@@ -19,7 +19,8 @@ struct OAuthConfig final
 	{
 		std::string SUBJECT;
 		std::string ISSUER;
-		xw::dt::Timedelta PERIOD = xw::dt::Timedelta();
+		std::string TOKEN_TYPE;
+		xw::dt::Timedelta PERIOD;
 	};
 
 	JWTConfig JWT;

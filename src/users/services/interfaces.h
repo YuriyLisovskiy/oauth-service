@@ -28,7 +28,8 @@ public:
 	[[nodiscard]]
 	virtual UserModel update(
 		long long int id,
-		const std::optional<std::string>& email, const std::optional<std::string>& raw_password
+		const std::optional<std::string>& email,
+		const std::optional<std::string>& raw_password
 	) const = 0;
 
 	[[nodiscard]]

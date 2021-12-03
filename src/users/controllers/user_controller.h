@@ -4,37 +4,32 @@
 
 #pragma once
 
-// xalwart
-#include <xalwart/controllers/controller.h>
-
 // oauth-service
-#include "../services/interfaces.h"
+#include "../mixins.h"
+#include "../../config/common_controllers.h"
+#include "../../oauth/mixins.h"
 
 
-class UserController : public xw::ctrl::Controller<long long int>
+class UserController : public JWTAuthRequiredController<long long int>,
+					   public UserServiceMixin,
+					   public ClientServiceMixin
 {
 public:
-	explicit inline UserController(
-		const xw::ILogger* logger, std::shared_ptr<IUserService> user_service
-	) :
-		xw::ctrl::Controller<long long int>({"get", "put", "delete"}, logger)
+	explicit inline UserController(const xw::ILogger* logger, const OAuthConfig& oauth_config) :
+		JWTAuthRequiredController<long long int>({"get", "put", "delete"}, logger, oauth_config)
 	{
-		this->_user_service = std::move(user_service);
-		xw::require_non_null(this->_user_service.get(), "'user_service' is nullptr", _ERROR_DETAILS_);
 	}
 
-	std::unique_ptr<xw::http::IResponse> get(
-		xw::http::IRequest* request, long long int id
-	) const override;
+	std::unique_ptr<xw::http::IResponse> get(xw::http::IRequest* request, long long id) const override;
 
-	std::unique_ptr<xw::http::IResponse> put(
-		xw::http::IRequest* request, long long int id
-	) const override;
+	std::unique_ptr<xw::http::IResponse> put(xw::http::IRequest* request, long long id) const override;
 
-	std::unique_ptr<xw::http::IResponse> delete_(
-		xw::http::IRequest* request, long long int id
-	) const override;
+	std::unique_ptr<xw::http::IResponse> delete_(xw::http::IRequest* request, long long id) const override;
 
-private:
-	std::shared_ptr<IUserService> _user_service = nullptr;
+protected:
+	[[nodiscard]]
+	inline bool client_exists(const std::string& id) const override
+	{
+		return !this->client_service->get_by_id(id).is_null();
+	}
 };

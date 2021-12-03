@@ -35,9 +35,7 @@ UserModel UserService::get_by_id(long long id) const
 	return user;
 }
 
-UserModel UserService::create(
-	const std::string& email, const std::string& raw_password
-) const
+UserModel UserService::create(const std::string& email, const std::string& raw_password) const
 {
 	auto now = xw::dt::Datetime::now(this->_timezone);
 	UserModel user(email, now, now);
@@ -50,8 +48,7 @@ UserModel UserService::create(
 }
 
 UserModel UserService::update(
-	long long int id,
-	const std::optional<std::string>& email, const std::optional<std::string>& raw_password
+	long long id, const std::optional<std::string>& email, const std::optional<std::string>& raw_password
 ) const
 {
 	UserModel user;
@@ -76,9 +73,7 @@ UserModel UserService::update(
 		}
 
 		user.updated_at = xw::dt::Datetime::now(this->_timezone);
-		this->_repository->update<UserModel>()
-		    .model(user)
-		    .commit_one();
+		this->_repository->update<UserModel>().model(user).commit_one();
 	});
 
 	return user;
