@@ -15,7 +15,7 @@
 #include "../../users/module.h"
 #include "../migrations/001_create_clients.h"
 #include "../migrations/002_create_users.h"
-#include "components/yaml.h"
+#include "./components/yaml.h"
 
 
 void Settings::register_modules()

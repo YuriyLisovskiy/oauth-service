@@ -35,3 +35,10 @@ public:
 	[[nodiscard]]
 	virtual UserModel remove(long long int id) const = 0;
 };
+
+
+
+
+
+
+

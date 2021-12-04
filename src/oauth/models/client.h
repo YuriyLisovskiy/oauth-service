@@ -13,7 +13,8 @@
 #include <xalwart.orm/db/model.h>
 
 
-class ClientModel : public xw::orm::db::Model, public xw::IJsonSerializable
+class ClientModel : public xw::orm::db::Model,
+					public xw::IJsonSerializable
 {
 public:
 	std::string client_id;
@@ -48,32 +49,30 @@ public:
 	}
 
 	[[nodiscard]]
-	inline std::string to_string() const override
-	{
-		if (this->is_null())
-		{
-			return "null";
-		}
-
-		return "Client:\n  id: " + this->client_id +
-			"\n  secret: " + this->client_secret +
-			"\n  created at: " + this->created_at.str() +
-			"\n  updated at: " + this->updated_at.str();
-	}
+	std::string to_string() const override;
 
 	[[nodiscard]]
-	nlohmann::json to_json() const override
-	{
-		if (this->is_null())
-		{
-			return nullptr;
-		}
-
-		return {
-			{"client_id", this->client_id},
-			{"client_secret", this->client_secret},
-			{"created_at", this->created_at.str()},
-			{"updated_at", this->updated_at.str()}
-		};
-	}
+	nlohmann::json to_json() const override;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

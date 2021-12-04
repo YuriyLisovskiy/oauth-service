@@ -19,7 +19,7 @@ std::unique_ptr<xw::http::IResponse> TokenController::post(xw::http::IRequest* r
 		throw xw::http::exc::BadRequest("request data is null", _ERROR_DETAILS_);
 	}
 
-	auto serializer = CreateTokenSerializer(this->_client_service)
+	auto serializer = CreateTokenSerializer(this->client_service)
 		.set_signature_algorithm(this->_signature_algorithm)
 		.set_jwt_period(this->_jwt_period)
 		.set_subject(this->_subject)
@@ -45,7 +45,8 @@ std::unique_ptr<xw::http::IResponse> TokenController::dispatch(xw::http::IReques
 				{"error_description", error.what()},
 				{
 					"error_uri",
-					"See the full API docs at https://github.com/YuriyLisovskiy/oauth-service/blob/master/README.md"
+					"See the full API docs at"
+						"https://github.com/YuriyLisovskiy/oauth-service/blob/master/README.md"
 				}
 			},
 			error.status_code()

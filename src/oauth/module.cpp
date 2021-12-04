@@ -30,13 +30,14 @@ void OAuthModuleConfig::urlpatterns()
 	this->url_func<TokenController>(R"(token/?)", "token", [this](const auto* settings) -> auto
 	{
 		auto* project_settings = (Settings*)settings;
-		return TokenController(project_settings->LOGGER.get())
-			.set_client_service(this->_client_service)
+		auto controller = TokenController(project_settings->LOGGER.get())
 			.set_signature_algorithm(project_settings->OAUTH.SIGNER)
 			.set_jwt_period(project_settings->OAUTH.JWT.PERIOD)
 			.set_subject(project_settings->OAUTH.JWT.SUBJECT)
 			.set_issuer(project_settings->OAUTH.JWT.ISSUER)
 			.set_token_type(project_settings->OAUTH.JWT.TOKEN_TYPE);
+		controller.set_client_service(this->_client_service);
+		return controller;
 	});
 }
 

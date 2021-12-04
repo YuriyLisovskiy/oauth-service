@@ -1,35 +1,27 @@
 # Copyright (c) 2021 Yuriy Lisovskiy
-
 debug: true
-
 allowed_hosts:
   - 127.0.0.1
   - ::1
-
 modules:
   - RootModuleConfig
   - OAuthModuleConfig
   - UsersModuleConfig
-
 middleware:
   - xw::middleware::Security
   - xw::middleware::Common
   - xw::middleware::XFrameOptions
-
 databases:
   - name: default
     dbms: sqlite3
     file: db.sqlite3
     connections: 3
-
 logger:
   use_colors: true
   levels: '*'
-
 limits:
   data_upload_max_memory_size: 20971520
   file_upload_max_memory_size: 104857600
-
 oauth:
   jwt:
     subject: 'oauth'
@@ -40,3 +32,5 @@ oauth:
   signer:
     algorithm: HS256
     secret_key: 'set in local settings'
+
+

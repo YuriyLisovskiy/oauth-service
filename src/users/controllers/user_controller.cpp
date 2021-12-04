@@ -33,3 +33,8 @@ std::unique_ptr<xw::http::IResponse> UserController::delete_(xw::http::IRequest*
 	auto user = this->user_service->remove(id);
 	return std::make_unique<xw::http::JsonResponse>(user.to_json(), 200);
 }
+
+
+
+
+

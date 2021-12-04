@@ -14,9 +14,11 @@
 
 // oauth-service
 #include "../services/interfaces.h"
+#include "../mixins.h"
 
 
-class TokenController : public xw::ctrl::Controller<>
+class TokenController : public xw::ctrl::Controller<>,
+						public ClientServiceMixin
 {
 public:
 	explicit inline TokenController(const xw::ILogger* logger) :
@@ -27,12 +29,6 @@ public:
 	std::unique_ptr<xw::http::IResponse> post(xw::http::IRequest* request) const override;
 
 	std::unique_ptr<xw::http::IResponse> dispatch(xw::http::IRequest* request) const override;
-
-	inline TokenController& set_client_service(std::shared_ptr<IClientService> client_service)
-	{
-		this->_client_service = std::move(client_service);
-		return *this;
-	}
 
 	inline TokenController& set_signature_algorithm(
 		std::shared_ptr<xw::crypto::ISignatureAlgorithm> signature_algorithm
@@ -67,7 +63,6 @@ public:
 	}
 
 private:
-	std::shared_ptr<IClientService> _client_service;
 	std::shared_ptr<xw::crypto::ISignatureAlgorithm> _signature_algorithm;
 	xw::dt::Timedelta _jwt_period;
 	std::string _subject;
